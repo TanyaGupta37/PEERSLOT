@@ -1,0 +1,241 @@
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f4f7fb;
+  color: #0f172a;
+}
+
+/* ========== WELCOME PAGE ========== */
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 60px;
+  background: #0b1c3d;
+  color: white;
+}
+
+.hero-left {
+  max-width: 500px;
+}
+
+.hero-left h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.hero-left p {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 30px;
+}
+
+.hero-buttons button {
+  padding: 14px 28px;
+  margin-right: 15px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-secondary {
+  background: white;
+  color: #0b1c3d;
+}
+
+.hero-right {
+  display: grid;
+  grid-template-columns: repeat(2, 200px);
+  gap: 20px;
+}
+
+.hero-right img {
+  width: 200px;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+
+/* ========== AUTH PAGES (LOGIN / SIGNUP) ========== */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+}
+
+.auth-left {
+  flex: 1;
+  background: #0b1c3d;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.auth-left h1 {
+  font-size: 42px;
+}
+
+.auth-right {
+  flex: 1;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-box {
+  width: 350px;
+}
+
+.auth-box h2 {
+  margin-bottom: 20px;
+}
+
+.field {
+  margin-bottom: 15px;
+}
+
+.field label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.field input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  font-size: 15px;
+}
+
+.auth-box button {
+  width: 100%;
+  padding: 12px;
+  background: #2563eb;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.auth-box p {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+/* ========== DASHBOARD ========== */
+
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background: #0b1c3d;
+  color: white;
+  position: fixed;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+}
+
+.sidebar a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  margin: 15px 0;
+  opacity: 0.9;
+}
+
+.main {
+  margin-left: 240px;
+  padding: 30px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+/* ========== PROFILE SETUP ========== */
+
+.setup-page {
+  min-height: 100vh;
+  background: #0b1c3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.setup-card {
+  width: 420px;
+  background: white;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.setup-card h2 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.step-indicator {
+  text-align: center;
+  font-size: 14px;
+  color: #475569;
+  margin-bottom: 20px;
+}
+
+.setup-card .field {
+  margin-bottom: 12px;
+}
+
+.setup-card textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+}
+
+.checkbox-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.setup-card button {
+  width: 100%;
+  padding: 12px;
+  background: #2563eb;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+}
