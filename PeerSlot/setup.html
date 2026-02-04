@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile Setup – PeerSlot</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="setup-page">
+  <div class="setup-card">
+
+    <h2>Complete Your Profile</h2>
+    <p class="step-indicator">Step 1 of 1 · Profile Details</p>
+
+    <!-- BASIC DETAILS -->
+    <div class="field">
+      <label>Full Name</label>
+      <input id="name" type="text" placeholder="e.g. Tanya Gupta">
+    </div>
+
+    <div class="field">
+      <label>Registration Number</label>
+      <input id="reg" type="text" placeholder="e.g. 23FE10CSE00037">
+    </div>
+
+    <div class="field">
+      <label>Branch / Department</label>
+      <input id="branch" type="text" placeholder="e.g. CSE (AI/ML)">
+    </div>
+
+    <div class="field">
+      <label>Semester</label>
+      <input id="sem" type="number" placeholder="e.g. 4">
+    </div>
+
+    <div class="field">
+      <label>Current CGPA</label>
+      <input id="cgpa" type="number" step="0.01" placeholder="e.g. 8.45">
+    </div>
+
+    <!-- SUBJECTS -->
+    <div class="field">
+      <label>Subjects / Skills I can help in</label>
+
+      <div class="checkbox-group">
+        <label><input type="checkbox" value="DSA"> DSA</label>
+        <label><input type="checkbox" value="Python"> Python</label>
+        <label><input type="checkbox" value="Java"> Java</label>
+        <label><input type="checkbox" value="C/C++"> C / C++</label>
+        <label><input type="checkbox" value="DBMS"> DBMS</label>
+        <label><input type="checkbox" value="OS"> OS</label>
+        <label><input type="checkbox" value="CN"> CN</label>
+        <label><input type="checkbox" value="Web Dev"> Web Development</label>
+        <label><input type="checkbox" value="ML"> Machine Learning</label>
+        <label><input type="checkbox" value="DL"> Deep Learning</label>
+        <label><input type="checkbox" value="Data Science"> Data Science</label>
+        <label><input type="checkbox" value="AI"> AI</label>
+        <label><input type="checkbox" value="IoT"> IoT</label>
+        <label><input type="checkbox" value="Cloud"> Cloud Computing</label>
+        <label><input type="checkbox" value="Cyber Security"> Cyber Security</label>
+        <label><input type="checkbox" value="Blockchain"> Blockchain</label>
+        <label><input type="checkbox" value="SE"> Software Engineering</label>
+        <label><input type="checkbox" value="Aptitude"> Aptitude</label>
+      </div>
+
+      <input
+        id="otherSubject"
+        style="margin-top:10px"
+        type="text"
+        placeholder="Other subject (if not listed)">
+    </div>
+
+    <!-- BIO -->
+    <div class="field">
+      <label>Short Bio</label>
+      <textarea
+        id="bio"
+        rows="3"
+        placeholder="Enter your strong subjects or areas you are confident in (e.g. DSA, Python, Web Dev)">
+      </textarea>
+    </div>
+
+    <!-- HELP TYPE -->
+    <div class="field">
+      <label>Preferred Help Type</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" value="Doubt Solving"> Doubt Solving</label>
+        <label><input type="checkbox" value="Assignment Help"> Assignment Help</label>
+        <label><input type="checkbox" value="Peer Study"> Peer Study / Groups</label>
+        <label><input type="checkbox" value="Teaching"> Teaching Others</label>
+        <label><input type="checkbox" value="Project Collaboration"> Project Collaboration</label>
+      </div>
+    </div>
+
+    <button onclick="finishSetup()">Finish Setup</button>
+
+  </div>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+let currentUser = null;
+
+/* Ensure user is logged in */
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+  } else {
+    currentUser = user;
+  }
+});
+
+window.finishSetup = async () => {
+  if (!currentUser) return;
+
+  const name = document.getElementById("name").value.trim();
+  const reg = document.getElementById("reg").value.trim();
+  const branch = document.getElementById("branch").value.trim();
+  const sem = document.getElementById("sem").value.trim();
+  const cgpa = document.getElementById("cgpa").value.trim();
+  const bio = document.getElementById("bio").value.trim();
+  const otherSubject = document.getElementById("otherSubject").value.trim();
+
+  if (!name || !reg || !branch || !sem || !cgpa) {
+    alert("Please fill all required fields");
+    return;
+  }
+
+  const subjects = [...document.querySelectorAll(
+    'input[type="checkbox"]:checked'
+  )]
+    .filter(cb => cb.closest(".field")?.querySelector("label")?.innerText.includes("Subjects"))
+    .map(cb => cb.value);
+
+  const helpType = [...document.querySelectorAll(
+    'input[type="checkbox"]:checked'
+  )]
+    .filter(cb => cb.closest(".field")?.querySelector("label")?.innerText.includes("Help"))
+    .map(cb => cb.value);
+
+  try {
+    await setDoc(doc(db, "users", currentUser.uid), {
+      name,
+      reg,
+      branch,
+      semester: sem,
+      cgpa,
+      subjects,
+      otherSubject,
+      bio,
+      helpType,
+      profileCompleted: true,
+      createdAt: serverTimestamp()
+    });
+
+    window.location.href = "dashboard.html";
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save profile. Try again.");
+  }
+};
+</script>
+
+</body>
+</html>

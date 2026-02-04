@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PeerSlot Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- FullCalendar -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>PeerSlot</h2>
+    <a class="active">Dashboard</a>
+    <a>Find Peer</a>
+    <a>Availability</a>
+    <a>My Sessions</a>
+    <a>My Peers</a>
+    <a>Rewards</a>
+    <a>Settings</a>
+  </div>
+
+  <!-- MAIN -->
+  <div class="dashboard-main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="search-box">
+        <input placeholder="Search subjects, peers, skills...">
+      </div>
+
+      <div class="top-icons">
+        <div class="bell">🔔</div>
+        <div class="avatar" id="avatar">T</div>
+      </div>
+    </div>
+
+    <!-- WELCOME -->
+    <div class="welcome">
+      <h1 id="welcome">Welcome back 👋</h1>
+      <div class="stats">
+        <div class="stat">⭐ 4.8 / 5</div>
+        <div class="stat">👥 Peers helped: 12</div>
+        <div class="stat">📅 Sessions booked: 7</div>
+      </div>
+    </div>
+
+    <!-- GRID -->
+    <div class="dashboard-grid">
+
+      <!-- LEFT COLUMN -->
+      <div>
+
+        <!-- FIND A PEER -->
+        <div class="card">
+          <h3>Find a Peer</h3>
+          <div class="find-peer">
+            <select>
+              <option>Subject</option>
+              <option>DSA</option>
+              <option>Python</option>
+              <option>Java</option>
+              <option>C / C++</option>
+              <option>DBMS</option>
+              <option>OS</option>
+              <option>CN</option>
+              <option>Web Development</option>
+              <option>Machine Learning</option>
+              <option>Data Science</option>
+              <option>AI</option>
+              <option>IoT</option>
+              <option>Cloud Computing</option>
+              <option>Cyber Security</option>
+              <option>Blockchain</option>
+              <option>Software Engineering</option>
+              <option>Aptitude</option>
+            </select>
+
+            <select>
+              <option>Mode</option>
+              <option>Online</option>
+              <option>In-person</option>
+              <option>Either / No preference</option>
+            </select>
+
+            <button>Find</button>
+          </div>
+        </div>
+
+        <!-- CALENDAR -->
+        <div class="card">
+          <h3>My Calendar</h3>
+          <div id="calendar"></div>
+        </div>
+
+        <!-- UPCOMING SESSIONS -->
+        <div class="card">
+          <h3>Upcoming Sessions</h3>
+
+          <div class="session">
+            <strong>DSA with Rohan</strong><br>
+            Today · 6:00 PM · Confirmed
+          </div>
+
+          <div class="session">
+            <strong>Python with Ananya</strong><br>
+            Tomorrow · 8:00 PM · Pending
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div>
+
+        <div class="card">
+          <h3>Your Available Slots</h3>
+
+          <div class="slot-row">
+            <select><option>Day</option></select>
+            <select><option>Time Slot</option></select>
+            <button>Add Slot</button>
+          </div>
+
+          <h4 style="margin-top:14px">
+            Slots added →
+          </h4>
+
+          <div class="slot">
+            <span>Mon · 6–7 PM</span>
+            <span>🗑️</span>
+          </div>
+
+          <div class="slot">
+            <span>Wed · 8–9 PM</span>
+            <span>🗑️</span>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Existing logic -->
+<script type="module" src="dashboard.js"></script>
+
+<!-- Calendar UI -->
+<script src="dashboard-calendar.js"></script>
+
+</body>
+</html>

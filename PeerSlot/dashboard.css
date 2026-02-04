@@ -1,0 +1,170 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f4f6fb;
+  color: #0f172a;
+}
+
+/* ===== LAYOUT ===== */
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===== SIDEBAR ===== */
+
+.sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #0b1c3d, #0f2a5c);
+  color: white;
+  padding: 20px;
+}
+
+.sidebar h2 {
+  margin-bottom: 30px;
+}
+
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  color: white;
+  text-decoration: none;
+  margin-bottom: 8px;
+  opacity: 0.9;
+  transition: background 0.2s ease;
+}
+
+.sidebar a:hover,
+.sidebar a.active {
+  background: rgba(255,255,255,0.15);
+}
+
+/* ===== MAIN ===== */
+
+.main {
+  flex: 1;
+  padding: 24px 32px;
+}
+
+/* ===== TOP BAR ===== */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.search {
+  flex: 1;
+  background: white;
+  border-radius: 14px;
+  padding: 12px 18px;
+  border: none;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.profile-pic {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #cbd5e1;
+}
+
+/* ===== HEADLINE ===== */
+
+#welcome {
+  font-size: 28px;
+  margin-bottom: 24px;
+}
+
+/* ===== GRID ===== */
+
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+/* ===== CARD ===== */
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
+/* ===== FIND PEER ===== */
+
+.filters {
+  display: flex;
+  gap: 12px;
+}
+
+.filters select,
+.filters button {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+.filters button {
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+}
+
+/* ===== PEER CARD ===== */
+
+.peer-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 14px;
+  margin-top: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.peer-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+.peer-info {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+.peer-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #cbd5e1;
+}
+
+.peer-actions button {
+  background: #2563eb;
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+/* ===== AVAILABILITY ===== */
+
+.slot {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #e5e7eb;
+}

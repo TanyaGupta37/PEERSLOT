@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login – PeerSlot</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h1>Welcome back</h1>
+    <p>Log in using your MUJ email</p>
+
+    <!-- EMAIL -->
+    <div class="email-group">
+      <input
+        id="emailPrefix"
+        placeholder="name.reg"
+      >
+      <div class="email-suffix">@muj.manipal.edu</div>
+    </div>
+
+    <!-- PASSWORD -->
+    <input id="password" type="password" placeholder="Password">
+
+    <!-- ERROR -->
+    <p id="error" style="color:red; font-size:14px; min-height:18px;"></p>
+
+    <button onclick="login()">Log In</button>
+
+    <div class="link">
+      Don’t have an account? <a href="signup.html">Sign up</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase.js";
+import {
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const errorEl = document.getElementById("error");
+
+window.login = async () => {
+  errorEl.textContent = "";
+
+  const prefix = emailPrefix.value.trim();
+  const passwordVal = password.value;
+
+  if (!prefix || !passwordVal) {
+    errorEl.textContent = "Please fill all fields";
+    return;
+  }
+
+  const email = prefix + "@muj.manipal.edu";
+
+  const mujRegex = /^[a-z0-9]+(\.[a-z0-9]+)*@muj\.manipal\.edu$/i;
+  if (!mujRegex.test(email)) {
+    errorEl.textContent = "Invalid MUJ email format";
+    return;
+  }
+
+  try {
+    const cred = await signInWithEmailAndPassword(
+      auth,
+      email,
+      passwordVal
+    );
+
+    if (!cred.user.emailVerified) {
+      errorEl.textContent = "Please verify your email first";
+      return;
+    }
+
+    // check profile completion
+    const snap = await getDoc(doc(db, "users", cred.user.uid));
+
+    if (!snap.exists()) {
+      window.location.href = "setup.html";
+    } else {
+      window.location.href = "dashboard.html";
+    }
+
+  } catch (err) {
+  console.log(err.code); // keep for debugging
+
+  if (err.code === "auth/user-not-found") {
+    errorEl.textContent = "Account not found";
+  }
+  else if (
+    err.code === "auth/wrong-password" ||
+    err.code === "auth/invalid-credential"
+  ) {
+    errorEl.textContent = "Wrong password";
+  }
+  else {
+    errorEl.textContent = "Login failed";
+  }
+}
+
+};
+</script>
+
+</body>
+</html>

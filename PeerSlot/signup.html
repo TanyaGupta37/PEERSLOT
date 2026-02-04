@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sign Up – PeerSlot</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h1>Create your account</h1>
+    <p>Use your MUJ university email</p>
+
+    <!-- EMAIL -->
+    <div class="email-group">
+      <input
+        id="emailPrefix"
+        placeholder="name.reg"
+      >
+      <div class="email-suffix">@muj.manipal.edu</div>
+    </div>
+
+    <!-- PASSWORD -->
+    <input id="password" type="password" placeholder="Password">
+
+    <!-- ERROR -->
+    <p id="error" style="color:red; font-size:14px; min-height:18px;"></p>
+
+    <button onclick="signup()">Sign Up</button>
+
+    <div class="link">
+      Already have an account? <a href="login.html">Log in</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { auth } from "./firebase.js";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const errorEl = document.getElementById("error");
+
+window.signup = async () => {
+  errorEl.textContent = "";
+
+  const prefix = emailPrefix.value.trim();
+  const passwordVal = password.value;
+
+  if (!prefix || !passwordVal) {
+    errorEl.textContent = "Please fill all fields";
+    return;
+  }
+
+  const email = prefix + "@muj.manipal.edu";
+
+  // strict MUJ format
+  const mujRegex = /^[a-z0-9]+(\.[a-z0-9]+)*@muj\.manipal\.edu$/i;
+  if (!mujRegex.test(email)) {
+    errorEl.textContent = "Invalid MUJ email format";
+    return;
+  }
+
+  try {
+    const cred = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      passwordVal
+    );
+
+    await sendEmailVerification(cred.user);
+
+    window.location.href = "login.html";
+
+  } catch (err) {
+    if (err.code === "auth/email-already-in-use") {
+      errorEl.textContent = "Account already registered";
+    } else {
+      errorEl.textContent = err.message;
+    }
+  }
+};
+</script>
+
+</body>
+</html>
