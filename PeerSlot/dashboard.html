@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="UTF-8">
+  <script src="https://unpkg.com/lucide@latest"></script>
   <title>PeerSlot Dashboard</title>
   <link rel="stylesheet" href="style.css">
 
@@ -30,24 +32,38 @@
     <!-- TOP BAR -->
     <div class="topbar">
       <div class="search-box">
+        <i data-lucide="search" class="search-icon"></i>
         <input placeholder="Search subjects, peers, skills...">
       </div>
-
       <div class="top-icons">
-        <div class="bell">🔔</div>
+        <div class="bell">
+          <i data-lucide="bell"></i>
+        </div>
         <div class="avatar" id="avatar">T</div>
       </div>
     </div>
 
     <!-- WELCOME -->
-    <div class="welcome">
-      <h1 id="welcome">Welcome back 👋</h1>
-      <div class="stats">
-        <div class="stat">⭐ 4.8 / 5</div>
-        <div class="stat">👥 Peers helped: 12</div>
-        <div class="stat">📅 Sessions booked: 7</div>
-      </div>
+<div class="welcome">
+  <h1 id="welcome">
+    Welcome back, <span id="firstName"></span> <i data-lucide="hand"></i>
+  </h1>
+
+  <div class="stats">
+    <div class="stat">
+      <i data-lucide="star"></i> 4.8 / 5
     </div>
+
+    <div class="stat">
+      <i data-lucide="users"></i> Peers helped: 12
+    </div>
+
+    <div class="stat">
+      <i data-lucide="calendar"></i> Sessions booked: 7
+    </div>
+  </div>
+</div>
+
 
     <!-- GRID -->
     <div class="dashboard-grid">
@@ -155,6 +171,9 @@
 
 <!-- Calendar UI -->
 <script src="dashboard-calendar.js"></script>
+<script>
+  lucide.createIcons();
+</script>
 
 </body>
 </html>

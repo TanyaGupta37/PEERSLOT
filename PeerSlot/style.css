@@ -334,15 +334,6 @@ body {
   box-shadow: 0 10px 25px rgba(0,0,0,0.05);
 }
 
-.search-box::before {
-  content: "🔍";
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 16px;
-  opacity: 0.6;
-}
 
 .top-icons {
   display: flex;
@@ -351,8 +342,13 @@ body {
 }
 
 .bell {
-  font-size: 20px;
   cursor: pointer;
+}
+
+.bell svg {
+  width: 20px;
+  height: 20px;
+  color: #0f172a;
 }
 
 .avatar {
@@ -380,6 +376,7 @@ body {
 .stats {
   display: flex;
   gap: 16px;
+  flex-wrap: wrap;
 }
 
 .stat {
@@ -510,4 +507,14 @@ body {
   border-radius: 8px;
   font-size: 12px;
   padding: 3px 5px;
+}
+
+.stat i,
+.search-icon,
+.bell svg {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  vertical-align: middle;
+  color: #2563eb;
 }
