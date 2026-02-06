@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select Help Topics | PeerSlot</title>
+
+  <!-- Existing global styles -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+  <div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <h2>PeerSlot</h2>
+      <a href="dashboard.html">Dashboard</a>
+      <a class="active">Topics</a>
+      <a href="profile.html">Profile</a>
+      <a href="settings.html">Settings</a>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="dashboard-main">
+
+      <div class="card">
+        <h3>Help Topics</h3>
+        <p style="font-size:14px; color:#64748b; margin-bottom:20px;">
+          Select the subjects you can help with or need help in
+        </p>
+
+        <h4>I can help with</h4>
+        <div id="helpOffered" class="checkbox-group"></div>
+
+        <h4 style="margin-top:24px;">I need help in</h4>
+        <div id="helpNeeded" class="checkbox-group"></div>
+
+        <button id="saveTopics" style="margin-top:24px;">
+          Save Topics
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="topics.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>
