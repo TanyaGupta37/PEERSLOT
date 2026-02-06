@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection
+    match /users/{userId} {
+      // Users can read their own profile
+      allow read: if request.auth != null && request.auth.uid == userId;
+      
+      // Users can read other users' public profiles
+      allow read: if request.auth != null;
+      
+      // Users can create/update their own profile
+      allow create, update: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Availability Slots collection
+    match /availabilitySlots/{slotId} {
+      // Users can read their own slots
+      allow read: if request.auth != null && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Users can read available slots of others (for peer viewing)
+      allow read: if request.auth != null && 
+                     resource.data.status == "available";
+      
+      // Users can create their own slots
+      allow create: if request.auth != null && 
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.keys().hasAll(['userId', 'date', 'startTime', 'endTime', 'status', 'createdAt', 'updatedAt']) &&
+                       request.resource.data.status in ['available', 'booked', 'blocked'];
+      
+      // Users can update their own available slots (not booked ones)
+      allow update: if request.auth != null && 
+                       resource.data.userId == request.auth.uid &&
+                       resource.data.status == "available" &&
+                       request.resource.data.userId == request.auth.uid;
+      
+      // Users can delete their own available slots (not booked ones)
+      allow delete: if request.auth != null && 
+                       resource.data.userId == request.auth.uid &&
+                       resource.data.status == "available";
+    }
+  }
+}

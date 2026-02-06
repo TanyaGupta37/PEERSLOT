@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PeerSlot - Availability Tests</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #0b1c3d;
+            color: white;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        .run-btn {
+            padding: 14px 32px;
+            font-size: 16px;
+            font-weight: 500;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-bottom: 30px;
+        }
+
+        .run-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-card.passed {
+            border-left: 4px solid #16a34a;
+        }
+
+        .stat-card.failed {
+            border-left: 4px solid #dc2626;
+        }
+
+        .stat-card.total {
+            border-left: 4px solid #2563eb;
+        }
+
+        .stat-card.rate {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .test-groups {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .test-group {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 20px;
+        }
+
+        .test-group h3 {
+            margin: 0 0 16px;
+            font-size: 16px;
+            color: #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .group-badge {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(37, 99, 235, 0.3);
+        }
+
+        .test-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .test-item.pass {
+            border-left: 3px solid #16a34a;
+        }
+
+        .test-item.fail {
+            border-left: 3px solid #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .test-icon {
+            font-size: 16px;
+        }
+
+        .test-name {
+            flex: 1;
+        }
+
+        .test-details {
+            font-size: 12px;
+            color: #f87171;
+            margin-top: 4px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: #64748b;
+        }
+
+        .empty-state p {
+            margin: 8px 0;
+        }
+
+        @media (max-width: 640px) {
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>🧪 PeerSlot Availability Tests</h1>
+        <p class="subtitle">Comprehensive test suite for availability slot functionality</p>
+
+        <button class="run-btn" id="runBtn" onclick="executeTests()">
+            ▶️ Run All Tests
+        </button>
+
+        <div class="summary" id="summary" style="display: none;">
+            <div class="stat-card total">
+                <div class="stat-value" id="totalCount">0</div>
+                <div class="stat-label">Total Tests</div>
+            </div>
+            <div class="stat-card passed">
+                <div class="stat-value" id="passedCount">0</div>
+                <div class="stat-label">Passed</div>
+            </div>
+            <div class="stat-card failed">
+                <div class="stat-value" id="failedCount">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+            <div class="stat-card rate">
+                <div class="stat-value" id="successRate">0%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+        </div>
+
+        <div class="test-groups" id="testResults">
+            <div class="empty-state">
+                <p>Click "Run All Tests" to execute the test suite</p>
+                <p>Tests cover utility functions, validation, overlap detection, and edge cases</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { runAllTests } from "./availability-tests.js";
+
+        window.executeTests = async function () {
+            const btn = document.getElementById("runBtn");
+            btn.disabled = true;
+            btn.textContent = "⏳ Running...";
+
+            // Clear previous results
+            document.getElementById("testResults").innerHTML = `
+      <div class="empty-state">
+        <p>Running tests...</p>
+      </div>
+    `;
+
+            // Run tests after a small delay for UI update
+            await new Promise(r => setTimeout(r, 100));
+
+            const results = runAllTests();
+
+            // Update summary
+            document.getElementById("summary").style.display = "grid";
+            document.getElementById("totalCount").textContent = results.passed + results.failed;
+            document.getElementById("passedCount").textContent = results.passed;
+            document.getElementById("failedCount").textContent = results.failed;
+            document.getElementById("successRate").textContent =
+                ((results.passed / (results.passed + results.failed)) * 100).toFixed(1) + "%";
+
+            // Group tests by name pattern
+            const groups = {};
+            const groupOrder = [
+                "UTILITY", "OVERLAP", "VALIDATION", "UPDATE", "CONSTANTS", "EDGE"
+            ];
+
+            results.tests.forEach(test => {
+                let groupName = "OTHER";
+
+                if (test.name.includes("timeToMinutes") || test.name.includes("minutesToTime") ||
+                    test.name.includes("formatTimeDisplay") || test.name.includes("getShortDay") ||
+                    test.name.includes("calculateDuration")) {
+                    groupName = "UTILITY";
+                } else if (test.name.toLowerCase().includes("overlap")) {
+                    groupName = "OVERLAP";
+                } else if (test.name.includes("validateUpdate")) {
+                    groupName = "UPDATE";
+                } else if (test.name.includes("validate") || test.name.includes("Validation")) {
+                    groupName = "VALIDATION";
+                } else if (test.name.includes("constants") || test.name.includes("DAYS") ||
+                    test.name.includes("TIME_SLOTS") || test.name.includes("BUSINESS") ||
+                    test.name.includes("SLOT_STATUS")) {
+                    groupName = "CONSTANTS";
+                } else if (test.name.includes("edge") || test.name.includes("Edge") ||
+                    test.name.includes("boundary") || test.name.includes("Boundary")) {
+                    groupName = "EDGE";
+                }
+
+                if (!groups[groupName]) groups[groupName] = [];
+                groups[groupName].push(test);
+            });
+
+            // Render results
+            let html = "";
+
+            groupOrder.forEach(groupName => {
+                const tests = groups[groupName];
+                if (!tests || tests.length === 0) return;
+
+                const passedInGroup = tests.filter(t => t.status === "PASS").length;
+
+                html += `
+        <div class="test-group">
+          <h3>
+            ${getGroupIcon(groupName)} ${getGroupLabel(groupName)}
+            <span class="group-badge">${passedInGroup}/${tests.length} passed</span>
+          </h3>
+          <div class="test-list">
+      `;
+
+                tests.forEach(test => {
+                    html += `
+          <div class="test-item ${test.status === "PASS" ? "pass" : "fail"}">
+            <span class="test-icon">${test.status === "PASS" ? "✅" : "❌"}</span>
+            <span class="test-name">
+              ${test.name}
+              ${test.details ? `<div class="test-details">${test.details}</div>` : ""}
+            </span>
+          </div>
+        `;
+                });
+
+                html += `</div></div>`;
+            });
+
+            document.getElementById("testResults").innerHTML = html;
+
+            btn.disabled = false;
+            btn.textContent = "🔄 Run Tests Again";
+        };
+
+        function getGroupIcon(group) {
+            const icons = {
+                UTILITY: "🔧",
+                OVERLAP: "🔀",
+                VALIDATION: "✓",
+                UPDATE: "✏️",
+                CONSTANTS: "📌",
+                EDGE: "⚡",
+                OTHER: "📦"
+            };
+            return icons[group] || "📦";
+        }
+
+        function getGroupLabel(group) {
+            const labels = {
+                UTILITY: "Utility Functions",
+                OVERLAP: "Overlap Detection",
+                VALIDATION: "Slot Validation",
+                UPDATE: "Update Validation",
+                CONSTANTS: "Constants & Config",
+                EDGE: "Edge Cases",
+                OTHER: "Other Tests"
+            };
+            return labels[group] || group;
+        }
+    </script>
+
+</body>
+
+</html>

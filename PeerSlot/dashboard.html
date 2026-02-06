@@ -1,179 +1,231 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://unpkg.com/lucide@latest"></script>
   <title>PeerSlot Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="availability.css">
 
   <!-- FullCalendar -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 </head>
+
 <body>
 
-<div class="dashboard-layout">
+  <div class="dashboard-layout">
 
-  <!-- SIDEBAR -->
-  <div class="sidebar">
-    <h2>PeerSlot</h2>
-    <a class="active">Dashboard</a>
-    <a>Find Peer</a>
-    <a>Availability</a>
-    <a>My Sessions</a>
-    <a>My Peers</a>
-    <a>Rewards</a>
-    <a>Settings</a>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <h2>PeerSlot</h2>
+      <a class="active" href="dashboard.html">Dashboard</a>
+      <a href="#find-peer">Find Peer</a>
+      <a href="availability.html">Availability</a>
+      <a href="#sessions">My Sessions</a>
+      <a href="#peers">My Peers</a>
+      <a href="#rewards">Rewards</a>
+      <a href="#settings">Settings</a>
+    </div>
+
+    <!-- MAIN -->
+    <div class="dashboard-main">
+
+      <!-- TOP BAR -->
+      <div class="topbar">
+        <div class="search-box">
+          <i data-lucide="search" class="search-icon"></i>
+          <input placeholder="Search subjects, peers, skills...">
+        </div>
+        <div class="top-icons">
+          <div class="bell">
+            <i data-lucide="bell"></i>
+          </div>
+          <div class="avatar" id="avatar">T</div>
+        </div>
+      </div>
+
+      <!-- WELCOME -->
+      <div class="welcome">
+        <h1 id="welcome">
+          Welcome back, <span id="firstName"></span> <i data-lucide="hand"></i>
+        </h1>
+
+        <div class="stats">
+          <div class="stat">
+            <i data-lucide="star"></i> 4.8 / 5
+          </div>
+
+          <div class="stat">
+            <i data-lucide="users"></i> Peers helped: 12
+          </div>
+
+          <div class="stat">
+            <i data-lucide="calendar"></i> Sessions booked: 7
+          </div>
+        </div>
+      </div>
+
+
+      <!-- GRID -->
+      <div class="dashboard-grid">
+
+        <!-- LEFT COLUMN -->
+        <div>
+
+          <!-- FIND A PEER -->
+          <div class="card" id="find-peer">
+            <h3>Find a Peer</h3>
+            <div class="find-peer">
+              <select id="find-subject">
+                <option value="">Subject</option>
+                <option>DSA</option>
+                <option>Python</option>
+                <option>Java</option>
+                <option>C / C++</option>
+                <option>DBMS</option>
+                <option>OS</option>
+                <option>CN</option>
+                <option>Web Development</option>
+                <option>Machine Learning</option>
+                <option>Data Science</option>
+                <option>AI</option>
+                <option>IoT</option>
+                <option>Cloud Computing</option>
+                <option>Cyber Security</option>
+                <option>Blockchain</option>
+                <option>Software Engineering</option>
+                <option>Aptitude</option>
+              </select>
+
+              <select id="find-mode">
+                <option value="">Mode</option>
+                <option>Online</option>
+                <option>In-person</option>
+                <option>Either / No preference</option>
+              </select>
+
+              <button id="find-peer-btn">Find</button>
+            </div>
+          </div>
+
+          <!-- CALENDAR -->
+          <div class="card">
+            <h3>My Calendar</h3>
+            <div id="calendar"></div>
+          </div>
+
+          <!-- UPCOMING SESSIONS -->
+          <div class="card" id="sessions">
+            <h3>Upcoming Sessions</h3>
+
+            <div class="session">
+              <strong>DSA with Rohan</strong><br>
+              Today · 6:00 PM · Confirmed
+            </div>
+
+            <div class="session">
+              <strong>Python with Ananya</strong><br>
+              Tomorrow · 8:00 PM · Pending
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div>
+
+          <!-- AVAILABILITY MANAGEMENT -->
+          <div class="card availability-card" id="availability">
+            <h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              Your Available Slots
+            </h3>
+
+            <!-- ADD SLOT FORM -->
+            <div class="add-slot-form">
+              <div class="field">
+                <label for="slot-day">Day</label>
+                <select id="slot-day">
+                  <option value="">Select Day</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="slot-start-time">Start Time</label>
+                <select id="slot-start-time">
+                  <option value="">Select Time</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="slot-end-time">End Time</label>
+                <select id="slot-end-time">
+                  <option value="">Select Time</option>
+                </select>
+              </div>
+
+              <button id="add-slot-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19" />
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                </svg>
+                Add Slot
+              </button>
+            </div>
+
+            <!-- ERROR MESSAGE -->
+            <div id="slot-error"></div>
+
+            <!-- SLOTS COUNT -->
+            <div id="slots-count"></div>
+
+            <!-- SLOTS LIST -->
+            <div id="slots-list">
+              <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Loading slots...</p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
   </div>
 
-  <!-- MAIN -->
-  <div class="dashboard-main">
+  <!-- Dashboard logic -->
+  <script type="module" src="dashboard.js"></script>
 
-    <!-- TOP BAR -->
-    <div class="topbar">
-      <div class="search-box">
-        <i data-lucide="search" class="search-icon"></i>
-        <input placeholder="Search subjects, peers, skills...">
-      </div>
-      <div class="top-icons">
-        <div class="bell">
-          <i data-lucide="bell"></i>
-        </div>
-        <div class="avatar" id="avatar">T</div>
-      </div>
-    </div>
+  <!-- Availability Module -->
+  <script type="module">
+    import { initAvailabilityUI } from "./availability-ui.js";
+    import { initPeerAvailabilityViewer } from "./peer-availability.js";
 
-    <!-- WELCOME -->
-<div class="welcome">
-  <h1 id="welcome">
-    Welcome back, <span id="firstName"></span> <i data-lucide="hand"></i>
-  </h1>
+    // Initialize availability UI
+    initAvailabilityUI();
+    initPeerAvailabilityViewer();
+  </script>
 
-  <div class="stats">
-    <div class="stat">
-      <i data-lucide="star"></i> 4.8 / 5
-    </div>
+  <!-- Calendar UI -->
+  <script src="dashboard-calendar.js"></script>
 
-    <div class="stat">
-      <i data-lucide="users"></i> Peers helped: 12
-    </div>
-
-    <div class="stat">
-      <i data-lucide="calendar"></i> Sessions booked: 7
-    </div>
-  </div>
-</div>
-
-
-    <!-- GRID -->
-    <div class="dashboard-grid">
-
-      <!-- LEFT COLUMN -->
-      <div>
-
-        <!-- FIND A PEER -->
-        <div class="card">
-          <h3>Find a Peer</h3>
-          <div class="find-peer">
-            <select>
-              <option>Subject</option>
-              <option>DSA</option>
-              <option>Python</option>
-              <option>Java</option>
-              <option>C / C++</option>
-              <option>DBMS</option>
-              <option>OS</option>
-              <option>CN</option>
-              <option>Web Development</option>
-              <option>Machine Learning</option>
-              <option>Data Science</option>
-              <option>AI</option>
-              <option>IoT</option>
-              <option>Cloud Computing</option>
-              <option>Cyber Security</option>
-              <option>Blockchain</option>
-              <option>Software Engineering</option>
-              <option>Aptitude</option>
-            </select>
-
-            <select>
-              <option>Mode</option>
-              <option>Online</option>
-              <option>In-person</option>
-              <option>Either / No preference</option>
-            </select>
-
-            <button>Find</button>
-          </div>
-        </div>
-
-        <!-- CALENDAR -->
-        <div class="card">
-          <h3>My Calendar</h3>
-          <div id="calendar"></div>
-        </div>
-
-        <!-- UPCOMING SESSIONS -->
-        <div class="card">
-          <h3>Upcoming Sessions</h3>
-
-          <div class="session">
-            <strong>DSA with Rohan</strong><br>
-            Today · 6:00 PM · Confirmed
-          </div>
-
-          <div class="session">
-            <strong>Python with Ananya</strong><br>
-            Tomorrow · 8:00 PM · Pending
-          </div>
-        </div>
-
-      </div>
-
-      <!-- RIGHT COLUMN -->
-      <div>
-
-        <div class="card">
-          <h3>Your Available Slots</h3>
-
-          <div class="slot-row">
-            <select><option>Day</option></select>
-            <select><option>Time Slot</option></select>
-            <button>Add Slot</button>
-          </div>
-
-          <h4 style="margin-top:14px">
-            Slots added →
-          </h4>
-
-          <div class="slot">
-            <span>Mon · 6–7 PM</span>
-            <span>🗑️</span>
-          </div>
-
-          <div class="slot">
-            <span>Wed · 8–9 PM</span>
-            <span>🗑️</span>
-          </div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<!-- Existing logic -->
-<script type="module" src="dashboard.js"></script>
-
-<!-- Calendar UI -->
-<script src="dashboard-calendar.js"></script>
-<script>
-  lucide.createIcons();
-</script>
+  <!-- Lucide Icons -->
+  <script>
+    lucide.createIcons();
+  </script>
 
 </body>
+
 </html>

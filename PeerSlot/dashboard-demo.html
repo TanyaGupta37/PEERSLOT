@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>PeerSlot Dashboard - Demo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="availability.css">
+
+    <!-- FullCalendar -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+</head>
+
+<body>
+
+    <div class="dashboard-layout">
+
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <h2>PeerSlot</h2>
+            <a class="active" href="dashboard-demo.html">Dashboard</a>
+            <a href="#find-peer">Find Peer</a>
+            <a href="availability-page.html">Availability</a>
+            <a href="#sessions">My Sessions</a>
+            <a href="#peers">My Peers</a>
+            <a href="#rewards">Rewards</a>
+            <a href="#settings">Settings</a>
+        </div>
+
+        <!-- MAIN -->
+        <div class="dashboard-main">
+
+            <!-- TOP BAR -->
+            <div class="topbar">
+                <div class="search-box">
+                    <i data-lucide="search" class="search-icon"></i>
+                    <input placeholder="Search subjects, peers, skills...">
+                </div>
+                <div class="top-icons">
+                    <div class="bell">
+                        <i data-lucide="bell"></i>
+                    </div>
+                    <div class="avatar" id="avatar" style="background: #2563eb;">D</div>
+                </div>
+            </div>
+
+            <!-- WELCOME -->
+            <div class="welcome">
+                <h1 id="welcome">
+                    Welcome back, Demo User <i data-lucide="hand"></i>
+                </h1>
+
+                <div class="stats">
+                    <div class="stat">
+                        <i data-lucide="star"></i> 4.8 / 5
+                    </div>
+
+                    <div class="stat">
+                        <i data-lucide="users"></i> Peers helped: 12
+                    </div>
+
+                    <div class="stat">
+                        <i data-lucide="calendar"></i> Sessions booked: 7
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- GRID -->
+            <div class="dashboard-grid">
+
+                <!-- LEFT COLUMN -->
+                <div>
+
+                    <!-- FIND A PEER -->
+                    <div class="card" id="find-peer">
+                        <h3>Find a Peer</h3>
+                        <div class="find-peer">
+                            <select id="find-subject">
+                                <option value="">Subject</option>
+                                <option>DSA</option>
+                                <option>Python</option>
+                                <option>Java</option>
+                                <option>C / C++</option>
+                                <option>DBMS</option>
+                                <option>OS</option>
+                                <option>CN</option>
+                                <option>Web Development</option>
+                                <option>Machine Learning</option>
+                                <option>Data Science</option>
+                                <option>AI</option>
+                                <option>IoT</option>
+                                <option>Cloud Computing</option>
+                                <option>Cyber Security</option>
+                                <option>Blockchain</option>
+                                <option>Software Engineering</option>
+                                <option>Aptitude</option>
+                            </select>
+
+                            <select id="find-mode">
+                                <option value="">Mode</option>
+                                <option>Online</option>
+                                <option>In-person</option>
+                                <option>Either / No preference</option>
+                            </select>
+
+                            <button id="find-peer-btn" onclick="alert('Find Peer feature - Coming soon!')">Find</button>
+                        </div>
+                    </div>
+
+                    <!-- CALENDAR -->
+                    <div class="card">
+                        <h3>My Calendar</h3>
+                        <div id="calendar"></div>
+                    </div>
+
+                    <!-- UPCOMING SESSIONS -->
+                    <div class="card" id="sessions">
+                        <h3>Upcoming Sessions</h3>
+
+                        <div class="session">
+                            <strong>DSA with Rohan</strong><br>
+                            Today · 6:00 PM · Confirmed
+                        </div>
+
+                        <div class="session">
+                            <strong>Python with Ananya</strong><br>
+                            Tomorrow · 8:00 PM · Pending
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- RIGHT COLUMN -->
+                <div>
+
+                    <!-- AVAILABILITY MANAGEMENT -->
+                    <div class="card availability-card" id="availability">
+                        <h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                <line x1="16" y1="2" x2="16" y2="6" />
+                                <line x1="8" y1="2" x2="8" y2="6" />
+                                <line x1="3" y1="10" x2="21" y2="10" />
+                            </svg>
+                            Your Available Slots
+                        </h3>
+
+                        <!-- ADD SLOT FORM -->
+                        <div class="add-slot-form">
+                            <div class="field">
+                                <label for="slot-day">Day</label>
+                                <select id="slot-day">
+                                    <option value="">Select Day</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="slot-start-time">Start Time</label>
+                                <select id="slot-start-time">
+                                    <option value="">Select Time</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="slot-end-time">End Time</label>
+                                <select id="slot-end-time">
+                                    <option value="">Select Time</option>
+                                </select>
+                            </div>
+
+                            <button id="add-slot-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19" />
+                                    <line x1="5" y1="12" x2="19" y2="12" />
+                                </svg>
+                                Add Slot
+                            </button>
+                        </div>
+
+                        <!-- ERROR MESSAGE -->
+                        <div id="slot-error"></div>
+
+                        <!-- SLOTS COUNT -->
+                        <div id="slots-count"></div>
+
+                        <!-- SLOTS LIST -->
+                        <div id="slots-list">
+                            <div class="loading-state">
+                                <div class="spinner"></div>
+                                <p>Loading slots...</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Demo Availability Module (No Firebase) -->
+    <script type="module">
+        // Mock availability data for demo
+        const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+        const TIME_SLOTS = [
+            "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
+            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+            "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+            "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
+            "18:00", "18:30", "19:00", "19:30", "20:00", "20:30",
+            "21:00", "21:30", "22:00", "22:30", "23:00"
+        ];
+
+        let demoSlots = [
+            { id: "1", day: "Monday", startTime: "10:00", endTime: "11:00", status: "available" },
+            { id: "2", day: "Monday", startTime: "14:00", endTime: "15:30", status: "available" },
+            { id: "3", day: "Wednesday", startTime: "09:00", endTime: "10:00", status: "available" },
+            { id: "4", day: "Wednesday", startTime: "16:00", endTime: "17:00", status: "booked" },
+            { id: "5", day: "Friday", startTime: "11:00", endTime: "12:30", status: "available" },
+        ];
+
+        function formatTimeDisplay(time) {
+            const [hours, mins] = time.split(":").map(Number);
+            const period = hours >= 12 ? "PM" : "AM";
+            const displayHours = hours % 12 || 12;
+            return `${displayHours}:${mins.toString().padStart(2, "0")} ${period}`;
+        }
+
+        function getShortDay(day) {
+            return day.substring(0, 3);
+        }
+
+        function timeToMinutes(time) {
+            const [hours, mins] = time.split(":").map(Number);
+            return hours * 60 + mins;
+        }
+
+        function calculateDuration(startTime, endTime) {
+            return timeToMinutes(endTime) - timeToMinutes(startTime);
+        }
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toast-container") || createToastContainer();
+            const toast = document.createElement("div");
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+      <span class="toast-icon">${type === "success" ? "✓" : type === "error" ? "✕" : "ℹ"}</span>
+      <span class="toast-message">${message}</span>
+    `;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add("show"), 10);
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function createToastContainer() {
+            const container = document.createElement("div");
+            container.id = "toast-container";
+            container.className = "toast-container";
+            document.body.appendChild(container);
+            return container;
+        }
+
+        // Populate selects
+        const daySelect = document.getElementById("slot-day");
+        const startTimeSelect = document.getElementById("slot-start-time");
+        const endTimeSelect = document.getElementById("slot-end-time");
+
+        daySelect.innerHTML = '<option value="">Select Day</option>' +
+            DAYS.map(day => `<option value="${day}">${day}</option>`).join("");
+
+        const timeOptions = TIME_SLOTS.map(time =>
+            `<option value="${time}">${formatTimeDisplay(time)}</option>`
+        ).join("");
+
+        startTimeSelect.innerHTML = '<option value="">Select Time</option>' + timeOptions;
+        endTimeSelect.innerHTML = '<option value="">Select Time</option>' + timeOptions;
+
+        // Auto-set end time
+        startTimeSelect.addEventListener("change", () => {
+            const startTime = startTimeSelect.value;
+            if (startTime) {
+                const startIndex = TIME_SLOTS.indexOf(startTime);
+                const defaultEndIndex = Math.min(startIndex + 2, TIME_SLOTS.length - 1);
+                endTimeSelect.value = TIME_SLOTS[defaultEndIndex];
+            }
+        });
+
+        // Render slots
+        function renderSlots() {
+            const slotsList = document.getElementById("slots-list");
+            const slotsCount = document.getElementById("slots-count");
+
+            if (demoSlots.length === 0) {
+                slotsList.innerHTML = `
+        <div class="empty-state">
+          <p>No availability slots added yet</p>
+          <p class="hint">Add your available time slots so peers can book sessions with you</p>
+        </div>
+      `;
+                slotsCount.innerHTML = "";
+                return;
+            }
+
+            // Update count
+            const available = demoSlots.filter(s => s.status === "available").length;
+            const booked = demoSlots.filter(s => s.status === "booked").length;
+            slotsCount.innerHTML = `
+      <span class="count-item"><strong>${demoSlots.length}</strong> Total</span>
+      <span class="count-divider">·</span>
+      <span class="count-item available"><strong>${available}</strong> Available</span>
+      ${booked > 0 ? `<span class="count-divider">·</span><span class="count-item booked"><strong>${booked}</strong> Booked</span>` : ""}
+    `;
+
+            // Group by day
+            const slotsByDay = {};
+            DAYS.forEach(day => {
+                const daySlots = demoSlots.filter(s => s.day === day);
+                if (daySlots.length > 0) {
+                    slotsByDay[day] = daySlots;
+                }
+            });
+
+            let html = "";
+            for (const [day, slots] of Object.entries(slotsByDay)) {
+                html += `<div class="day-group"><div class="day-label">${getShortDay(day)}</div><div class="day-slots">`;
+
+                for (const slot of slots) {
+                    const isBooked = slot.status === "booked";
+                    const statusClass = isBooked ? "slot-booked" : "slot-available";
+                    const statusBadge = isBooked ? '<span class="status-badge booked">Booked</span>' : "";
+
+                    html += `
+          <div class="slot ${statusClass}" data-slot-id="${slot.id}">
+            <div class="slot-time">
+              <span class="time-range">${formatTimeDisplay(slot.startTime)} – ${formatTimeDisplay(slot.endTime)}</span>
+              ${statusBadge}
+            </div>
+            <div class="slot-actions">
+              ${!isBooked ? `
+                <button class="btn-icon btn-edit" onclick="editSlot('${slot.id}')" title="Edit">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+                <button class="btn-icon btn-delete" onclick="deleteSlot('${slot.id}')" title="Delete">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
+              ` : `<span class="locked-icon" title="Cannot modify booked slot">🔒</span>`}
+            </div>
+          </div>
+        `;
+                }
+
+                html += `</div></div>`;
+            }
+
+            slotsList.innerHTML = html;
+        }
+
+        // Add slot
+        document.getElementById("add-slot-btn").addEventListener("click", () => {
+            const day = daySelect.value;
+            const startTime = startTimeSelect.value;
+            const endTime = endTimeSelect.value;
+
+            if (!day || !startTime || !endTime) {
+                showToast("Please select day, start time, and end time", "error");
+                return;
+            }
+
+            const duration = calculateDuration(startTime, endTime);
+            if (duration < 30) {
+                showToast("Minimum slot duration is 30 minutes", "error");
+                return;
+            }
+            if (duration > 180) {
+                showToast("Maximum slot duration is 3 hours", "error");
+                return;
+            }
+
+            const newSlot = {
+                id: Date.now().toString(),
+                day,
+                startTime,
+                endTime,
+                status: "available"
+            };
+
+            demoSlots.push(newSlot);
+            demoSlots.sort((a, b) => {
+                const dayDiff = DAYS.indexOf(a.day) - DAYS.indexOf(b.day);
+                if (dayDiff !== 0) return dayDiff;
+                return timeToMinutes(a.startTime) - timeToMinutes(b.startTime);
+            });
+
+            daySelect.value = "";
+            startTimeSelect.value = "";
+            endTimeSelect.value = "";
+
+            renderSlots();
+            showToast("Slot added successfully!", "success");
+        });
+
+        // Edit slot
+        window.editSlot = (id) => {
+            const slot = demoSlots.find(s => s.id === id);
+            if (!slot) return;
+            showToast(`Edit feature: ${slot.day} ${formatTimeDisplay(slot.startTime)}-${formatTimeDisplay(slot.endTime)}`, "info");
+        };
+
+        // Delete slot
+        window.deleteSlot = (id) => {
+            const slot = demoSlots.find(s => s.id === id);
+            if (!slot) return;
+
+            if (confirm(`Delete slot: ${slot.day} ${formatTimeDisplay(slot.startTime)}-${formatTimeDisplay(slot.endTime)}?`)) {
+                demoSlots = demoSlots.filter(s => s.id !== id);
+                renderSlots();
+                showToast("Slot deleted successfully!", "success");
+            }
+        };
+
+        // Initial render
+        renderSlots();
+    </script>
+
+    <!-- Calendar UI -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const calendarEl = document.getElementById("calendar");
+            if (!calendarEl) return;
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: "dayGridWeek",
+                height: 380,
+                headerToolbar: {
+                    left: "prev,next",
+                    center: "title",
+                    right: ""
+                },
+                events: [
+                    {
+                        title: "Available",
+                        start: new Date().setHours(10, 0),
+                        end: new Date().setHours(11, 0),
+                        backgroundColor: "#16a34a",
+                        borderColor: "#15803d"
+                    },
+                    {
+                        title: "Booked: DSA Session",
+                        start: new Date().setHours(18, 0),
+                        end: new Date().setHours(19, 0),
+                        backgroundColor: "#2563eb",
+                        borderColor: "#1d4ed8"
+                    }
+                ]
+            });
+
+            calendar.render();
+        });
+    </script>
+
+    <!-- Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+
+</html>
