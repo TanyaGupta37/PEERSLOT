@@ -1,13 +1,16 @@
 /**
  * Dashboard Calendar - Integrated with Availability Slots
+ * Auto-syncs with availability changes in real-time
  */
+
+let dashboardCalendar = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   const calendarEl = document.getElementById("calendar");
   if (!calendarEl) return;
 
   // Initialize calendar with basic view first
-  const calendar = new FullCalendar.Calendar(calendarEl, {
+  dashboardCalendar = new FullCalendar.Calendar(calendarEl, {
     initialView: "dayGridWeek",
     height: 380,
 
@@ -26,10 +29,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  calendar.render();
+  dashboardCalendar.render();
 
   // Load availability slots after calendar is rendered
-  loadAvailabilityToCalendar(calendar);
+  loadAvailabilityToCalendar(dashboardCalendar);
+
+  // Listen for availability slot changes and refresh calendar
+  window.addEventListener('availabilitySlotsChanged', (event) => {
+    console.log('Availability slots changed, refreshing calendar...');
+    loadAvailabilityToCalendar(dashboardCalendar);
+  });
 });
 
 /**
@@ -132,4 +141,13 @@ function addFallbackEvents(calendar) {
     borderColor: "#f59e0b"
   });
 }
+
+/**
+ * Export function to manually refresh calendar (if needed)
+ */
+window.refreshDashboardCalendar = function () {
+  if (dashboardCalendar) {
+    loadAvailabilityToCalendar(dashboardCalendar);
+  }
+};
 

@@ -283,7 +283,7 @@ function showError(message) {
 // LOAD & RENDER SLOTS
 // ============================================
 
-async function loadSlots() {
+async function loadSlots(notifyCalendar = false) {
     if (isLoading) return;
     isLoading = true;
 
@@ -292,6 +292,11 @@ async function loadSlots() {
         currentSlots = await fetchOwnSlotsSorted();
         renderSlots();
         updateSlotCount();
+
+        // Notify calendar of slot changes
+        if (notifyCalendar) {
+            dispatchSlotsChangedEvent();
+        }
     } catch (err) {
         console.error("Error loading slots:", err);
         showToast("Failed to load slots", "error");
@@ -299,6 +304,16 @@ async function loadSlots() {
         isLoading = false;
         setLoadingState(false);
     }
+}
+
+/**
+ * Dispatch custom event to notify other components of slot changes
+ */
+function dispatchSlotsChangedEvent() {
+    const event = new CustomEvent('availabilitySlotsChanged', {
+        detail: { slots: currentSlots }
+    });
+    window.dispatchEvent(event);
 }
 
 function setLoadingState(loading) {
@@ -420,8 +435,8 @@ async function handleAddSlot() {
         elements.startTimeSelect.value = "";
         elements.endTimeSelect.value = "";
 
-        // Reload slots
-        await loadSlots();
+        // Reload slots and notify calendar
+        await loadSlots(true);
 
         showToast("Slot added successfully!", "success");
     } catch (err) {
@@ -479,7 +494,7 @@ async function handleSaveEdit() {
         await updateSlot(editingSlotId, { day, startTime, endTime });
 
         closeEditModal();
-        await loadSlots();
+        await loadSlots(true);
 
         showToast("Slot updated successfully!", "success");
     } catch (err) {
@@ -533,7 +548,7 @@ async function handleConfirmDelete() {
         await deleteSlot(deletingSlotId);
 
         closeDeleteModal();
-        await loadSlots();
+        await loadSlots(true);
 
         showToast("Slot deleted successfully!", "success");
     } catch (err) {
