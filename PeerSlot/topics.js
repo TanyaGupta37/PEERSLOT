@@ -1,22 +1,16 @@
-// ================= MOCK TOPICS =================
-const mockTopics = [
-  { id: "dsa", name: "Data Structures & Algorithms" },
-  { id: "python", name: "Python" },
-  { id: "java", name: "Java" },
-  { id: "dbms", name: "Database Management Systems" },
-  { id: "os", name: "Operating Systems" },
-  { id: "cn", name: "Computer Networks" },
-  { id: "web", name: "Web Development" },
-  { id: "ml", name: "Machine Learning" },
-  { id: "ai", name: "Artificial Intelligence" }
-];
+// ================= FIREBASE =================
+import { db } from "./firebase.js";
+import {
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ================= DOM ELEMENTS =================
 const helpOfferedDiv = document.getElementById("helpOffered");
 const helpNeededDiv = document.getElementById("helpNeeded");
 const saveBtn = document.getElementById("saveTopics");
 
-// ================= USER DATA (MOCK STORAGE) =================
+// ================= USER DATA (TEMP STORAGE) =================
 function getUserTopics() {
   return {
     helpOffered: JSON.parse(localStorage.getItem("helpOffered")) || [],
@@ -24,11 +18,24 @@ function getUserTopics() {
   };
 }
 
-// ================= RENDER TOPICS =================
-function renderTopics() {
-  const userData = getUserTopics();
+// ================= FETCH TOPICS FROM FIRESTORE =================
+async function fetchTopics() {
+  const snapshot = await getDocs(collection(db, "topics"));
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    name: doc.data().name
+  }));
+}
 
-  mockTopics.forEach(topic => {
+// ================= RENDER TOPICS =================
+async function renderTopics() {
+  const userData = getUserTopics();
+  const topics = await fetchTopics();
+
+  helpOfferedDiv.innerHTML = "";
+  helpNeededDiv.innerHTML = "";
+
+  topics.forEach(topic => {
     // Help Offered
     helpOfferedDiv.innerHTML += `
       <label>
