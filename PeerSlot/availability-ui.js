@@ -328,60 +328,35 @@ function renderSlots() {
 
     if (currentSlots.length === 0) {
         elements.slotsList.innerHTML = `
-      <div class="empty-state">
-        <p>No availability slots added yet</p>
-        <p class="hint">Add your available time slots so peers can book sessions with you</p>
+      <div style="color: #94a3b8; font-size: 0.9rem; padding: 8px 0;">
+        No slots added yet
       </div>
     `;
         return;
     }
 
-    // Group slots by day
-    const slotsByDay = {};
-    DAYS.forEach(day => {
-        const daySlots = currentSlots.filter(s => s.day === day);
-        if (daySlots.length > 0) {
-            slotsByDay[day] = daySlots;
-        }
-    });
-
+    // Render slots in simple format matching original design
     let html = "";
 
-    for (const [day, slots] of Object.entries(slotsByDay)) {
-        html += `<div class="day-group"><div class="day-label">${getShortDay(day)}</div><div class="day-slots">`;
+    for (const slot of currentSlots) {
+        const isBooked = slot.status === SLOT_STATUS.BOOKED;
+        const dayShort = getShortDay(slot.day);
+        const timeRange = `${formatTimeDisplay(slot.startTime)}–${formatTimeDisplay(slot.endTime)}`;
 
-        for (const slot of slots) {
-            const isBooked = slot.status === SLOT_STATUS.BOOKED;
-            const statusClass = isBooked ? "slot-booked" : "slot-available";
-            const statusBadge = isBooked ? '<span class="status-badge booked">Booked</span>' : "";
-
-            html += `
-        <div class="slot ${statusClass}" data-slot-id="${slot.id}">
-          <div class="slot-time">
-            <span class="time-range">${formatTimeDisplay(slot.startTime)} – ${formatTimeDisplay(slot.endTime)}</span>
-            ${statusBadge}
-          </div>
-          <div class="slot-actions">
-            ${!isBooked ? `
-              <button class="btn-icon btn-edit" onclick="window.openEditModal('${slot.id}')" title="Edit">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                </svg>
-              </button>
-              <button class="btn-icon btn-delete" onclick="window.openDeleteModal('${slot.id}')" title="Delete">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="3 6 5 6 21 6"/>
-                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                </svg>
-              </button>
-            ` : `<span class="locked-icon" title="Cannot modify booked slot">🔒</span>`}
-          </div>
-        </div>
-      `;
-        }
-
-        html += `</div></div>`;
+        html += `
+      <div class="slot" data-slot-id="${slot.id}" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: ${isBooked ? '#f1f5f9' : '#f8fafc'}; border-radius: 8px; margin-bottom: 8px; ${isBooked ? 'opacity: 0.7;' : ''}">
+        <span style="font-size: 0.95rem; color: #334155;">
+          <strong>${dayShort}</strong> · ${timeRange}
+          ${isBooked ? '<span style="color: #2563eb; font-size: 0.75rem; margin-left: 8px;">● Booked</span>' : ''}
+        </span>
+        <span style="display: flex; gap: 8px; align-items: center;">
+          ${!isBooked ? `
+            <button onclick="window.openEditModal('${slot.id}')" style="background: none; border: none; cursor: pointer; padding: 4px; color: #64748b; font-size: 1.1rem;" title="Edit">✏️</button>
+            <button onclick="window.openDeleteModal('${slot.id}')" style="background: none; border: none; cursor: pointer; padding: 4px; font-size: 1.1rem;" title="Delete">🗑️</button>
+          ` : '<span style="color: #94a3b8; font-size: 0.9rem;">🔒</span>'}
+        </span>
+      </div>
+    `;
     }
 
     elements.slotsList.innerHTML = html;
@@ -394,11 +369,14 @@ function updateSlotCount() {
     const booked = currentSlots.filter(s => s.status === SLOT_STATUS.BOOKED).length;
     const total = currentSlots.length;
 
+    if (total === 0) {
+        elements.slotsCount.innerHTML = "";
+        return;
+    }
+
     elements.slotsCount.innerHTML = `
-    <span class="count-item"><strong>${total}</strong> Total</span>
-    <span class="count-divider">·</span>
-    <span class="count-item available"><strong>${available}</strong> Available</span>
-    ${booked > 0 ? `<span class="count-divider">·</span><span class="count-item booked"><strong>${booked}</strong> Booked</span>` : ""}
+    <span style="color: #16a34a;">${available} available</span>
+    ${booked > 0 ? ` · <span style="color: #2563eb;">${booked} booked</span>` : ""}
   `;
 }
 

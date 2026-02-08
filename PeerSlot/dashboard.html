@@ -138,66 +138,43 @@
         <div>
 
           <!-- AVAILABILITY MANAGEMENT -->
-          <div class="card availability-card" id="availability">
-            <h3>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-              Your Available Slots
-            </h3>
+          <div class="card" id="availability">
+            <h3>Your Available Slots</h3>
 
-            <!-- ADD SLOT FORM -->
-            <div class="add-slot-form">
-              <div class="field">
-                <label for="slot-day">Day</label>
-                <select id="slot-day">
-                  <option value="">Select Day</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label for="slot-start-time">Start Time</label>
-                <select id="slot-start-time">
-                  <option value="">Select Time</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label for="slot-end-time">End Time</label>
-                <select id="slot-end-time">
-                  <option value="">Select Time</option>
-                </select>
-              </div>
-
-              <button id="add-slot-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                Add Slot
-              </button>
+            <!-- ADD SLOT FORM - Simplified single row -->
+            <div class="slot-row">
+              <select id="slot-day">
+                <option value="">Day</option>
+              </select>
+              <select id="slot-start-time">
+                <option value="">Start</option>
+              </select>
+              <select id="slot-end-time">
+                <option value="">End</option>
+              </select>
+              <button id="add-slot-btn">Add Slot</button>
             </div>
 
             <!-- ERROR MESSAGE -->
-            <div id="slot-error"></div>
+            <div id="slot-error" style="display: none; color: #dc2626; font-size: 0.85rem; margin-top: 8px;"></div>
 
             <!-- SLOTS COUNT -->
-            <div id="slots-count"></div>
+            <h4 style="margin-top:14px" id="slots-count-header">
+              Slots added →
+            </h4>
+            <div id="slots-count" style="font-size: 0.85rem; color: #64748b; margin-bottom: 8px;"></div>
 
             <!-- SLOTS LIST -->
             <div id="slots-list">
               <div class="loading-state">
-                <div class="spinner"></div>
-                <p>Loading slots...</p>
+                <p style="color: #94a3b8; font-size: 0.9rem;">Loading slots...</p>
               </div>
             </div>
 
           </div>
 
         </div>
+
 
       </div>
 
