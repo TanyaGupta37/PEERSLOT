@@ -1,6 +1,14 @@
 import { auth, db } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { formatTimeDisplay, getShortDay, SLOT_STATUS } from "./availability.js";
 
 const avatarColors = [
   "#2563eb", "#16a34a", "#db2777",
@@ -14,32 +22,46 @@ function getAvatarColor(letter) {
 let allSlots = [];
 let currentUid = null;
 
-// Fetch all users and flatten their availability into slot entries
+// Fetch all available slots and join with user profile data
 async function fetchSlots() {
-  const snapshot = await getDocs(collection(db, "users"));
-  const slots = [];
+  const q = query(
+    collection(db, "availabilitySlots"),
+    where("status", "==", SLOT_STATUS.AVAILABLE)
+  );
 
-  snapshot.forEach((docSnap) => {
-    const uid = docSnap.id;
-    if (uid === currentUid) return; // AC3: Exclude self
+  const snapshot = await getDocs(q);
+  const slotDocs = snapshot.docs
+    .map((d) => ({ id: d.id, ...d.data() }))
+    .filter((s) => s.userId && s.userId !== currentUid);
 
-    const data = docSnap.data();
-    const availability = data.availability || [];
-    const subjects = data.subjects || [];
-    const name = data.name || "Unknown";
+  const uniqueUserIds = Array.from(new Set(slotDocs.map((s) => s.userId)));
 
-    availability.forEach((slot) => {
-      slots.push({
-        uid,
-        name,
-        subjects,
-        day: slot.day || "",
-        time: slot.time || "",
-      });
-    });
+  const userEntries = await Promise.all(
+    uniqueUserIds.map(async (uid) => {
+      const userSnap = await getDoc(doc(db, "users", uid));
+      if (!userSnap.exists()) {
+        return [uid, { name: "Unknown", subjects: [] }];
+      }
+      const data = userSnap.data();
+      return [uid, { name: data.name || "Unknown", subjects: data.subjects || [] }];
+    })
+  );
+
+  const userById = Object.fromEntries(userEntries);
+
+  return slotDocs.map((slot) => {
+    const user = userById[slot.userId] || { name: "Unknown", subjects: [] };
+    return {
+      uid: slot.userId,
+      name: user.name,
+      subjects: user.subjects,
+      day: slot.day || "",
+      startTime: slot.startTime || "",
+      endTime: slot.endTime || "",
+      duration: slot.duration,
+      slotId: slot.id
+    };
   });
-
-  return slots;
 }
 
 // Render slot cards into the container
@@ -63,6 +85,10 @@ function renderSlots(slots) {
       (s) => `<span class="slot-tag">${s}</span>`
     ).join("");
 
+    const timeText = (slot.startTime && slot.endTime)
+      ? `${formatTimeDisplay(slot.startTime)} – ${formatTimeDisplay(slot.endTime)}`
+      : "";
+
     return `
       <div class="slot-card">
         <div class="slot-left">
@@ -71,7 +97,7 @@ function renderSlots(slots) {
             <h4>${slot.name}</h4>
             <div class="slot-meta">
               <span>📅 ${slot.day}</span>
-              <span>🕐 ${slot.time}</span>
+              <span>🕐 ${timeText}</span>
             </div>
             <div class="slot-tags">${tags}</div>
           </div>
@@ -95,7 +121,7 @@ function applyFilters() {
   }
 
   if (dayFilter) {
-    filtered = filtered.filter((slot) => slot.day === dayFilter);
+    filtered = filtered.filter((slot) => getShortDay(slot.day) === dayFilter);
   }
 
   renderSlots(filtered);

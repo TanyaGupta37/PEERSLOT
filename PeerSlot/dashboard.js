@@ -36,4 +36,11 @@ onAuthStateChanged(auth, async (user) => {
 
   avatar.innerText = letter;
   avatar.style.background = getAvatarColor(letter);
+
+  const findPeerBtn = document.getElementById("find-peer-btn");
+  if (findPeerBtn) {
+    findPeerBtn.addEventListener("click", () => {
+      window.location.href = "find-peer.html";
+    });
+  }
 });
