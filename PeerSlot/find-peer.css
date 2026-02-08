@@ -1,0 +1,182 @@
+/* ===== FIND PEER PAGE ===== */
+
+.page-subtitle {
+  font-size: 15px;
+  color: #64748b;
+  margin-top: -8px;
+}
+
+/* GRID: slots left, filters right */
+.find-peer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+/* SLOTS AREA */
+.slots-area {
+  min-height: 300px;
+}
+
+/* INDIVIDUAL SLOT CARD */
+.slot-card {
+  background: white;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slot-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+}
+
+.slot-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.slot-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.slot-details h4 {
+  margin: 0 0 4px 0;
+  font-size: 15px;
+}
+
+.slot-details .slot-meta {
+  font-size: 13px;
+  color: #64748b;
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.slot-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.slot-tag {
+  background: #eff6ff;
+  color: #2563eb;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* FILTER PANEL */
+.filter-panel .card {
+  position: sticky;
+  top: 24px;
+}
+
+.filter-panel .card h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-panel .card h3 svg {
+  width: 18px;
+  height: 18px;
+  color: #2563eb;
+}
+
+.filter-group {
+  margin-bottom: 16px;
+}
+
+.filter-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.filter-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 14px;
+  background: white;
+}
+
+.filter-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  margin-bottom: 8px;
+  transition: background 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: #1e4fd6;
+}
+
+.filter-btn.clear {
+  background: transparent;
+  color: #64748b;
+  border: 1px solid #e5e7eb;
+}
+
+.filter-btn.clear:hover {
+  background: #f1f5f9;
+}
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #64748b;
+}
+
+.empty-state svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  color: #cbd5e1;
+}
+
+.empty-state h3 {
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.empty-state p {
+  font-size: 14px;
+}
+
+/* LOADING STATE */
+.loading-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #64748b;
+  font-size: 15px;
+}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <title>Find a Peer – PeerSlot</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="find-peer.css">
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>PeerSlot</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a class="active" href="find-peer.html">Find Peer</a>
+    <a>Availability</a>
+    <a>My Sessions</a>
+    <a>My Peers</a>
+    <a>Rewards</a>
+    <a>Settings</a>
+  </div>
+
+  <!-- MAIN -->
+  <div class="dashboard-main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="search-box">
+        <i data-lucide="search" class="search-icon"></i>
+        <input placeholder="Search subjects, peers, skills...">
+      </div>
+      <div class="top-icons">
+        <div class="bell">
+          <i data-lucide="bell"></i>
+        </div>
+        <div class="avatar" id="avatar">T</div>
+      </div>
+    </div>
+
+    <!-- PAGE HEADING -->
+    <div class="welcome">
+      <h1><i data-lucide="users"></i> Find a Peer</h1>
+      <p class="page-subtitle">Browse available slots from peers and filter by subject or day.</p>
+    </div>
+
+    <!-- CONTENT GRID: slots left, filters right -->
+    <div class="find-peer-grid">
+
+      <!-- LEFT: SLOTS LIST -->
+      <div class="slots-area">
+        <div id="slots-container">
+          <div class="loading-state">Loading available slots...</div>
+        </div>
+
+        <!-- EMPTY STATE (hidden by default) -->
+        <div id="empty-state" class="empty-state" style="display:none;">
+          <i data-lucide="search-x"></i>
+          <h3>No matching peers found</h3>
+          <p>Try adjusting your filters or check back later.</p>
+        </div>
+      </div>
+
+      <!-- RIGHT: FILTER SECTION -->
+      <div class="filter-panel">
+        <div class="card">
+          <h3><i data-lucide="filter"></i> Filters</h3>
+
+          <div class="filter-group">
+            <label>Subject</label>
+            <select id="filter-subject">
+              <option value="">All Subjects</option>
+              <option value="DSA">DSA</option>
+              <option value="Python">Python</option>
+              <option value="Java">Java</option>
+              <option value="C/C++">C / C++</option>
+              <option value="DBMS">DBMS</option>
+              <option value="OS">OS</option>
+              <option value="CN">CN</option>
+              <option value="Web Dev">Web Development</option>
+              <option value="ML">Machine Learning</option>
+              <option value="DL">Deep Learning</option>
+              <option value="Data Science">Data Science</option>
+              <option value="AI">AI</option>
+              <option value="IoT">IoT</option>
+              <option value="Cloud">Cloud Computing</option>
+              <option value="Cyber Security">Cyber Security</option>
+              <option value="Blockchain">Blockchain</option>
+              <option value="SE">Software Engineering</option>
+              <option value="Aptitude">Aptitude</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Day</label>
+            <select id="filter-day">
+              <option value="">All Days</option>
+              <option value="Mon">Monday</option>
+              <option value="Tue">Tuesday</option>
+              <option value="Wed">Wednesday</option>
+              <option value="Thu">Thursday</option>
+              <option value="Fri">Friday</option>
+              <option value="Sat">Saturday</option>
+              <option value="Sun">Sunday</option>
+            </select>
+          </div>
+
+          <button id="apply-filters" class="filter-btn">Apply Filters</button>
+          <button id="clear-filters" class="filter-btn clear">Clear Filters</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<script type="module" src="find-peer.js"></script>
+<script>
+  lucide.createIcons();
+</script>
+
+</body>
+</html>
