@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>PeerSlot - Availability</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="availability.css">
+
+    <!-- FullCalendar -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+    <style>
+        .availability-page {
+            min-height: 100vh;
+            background: #f4f6fb;
+            padding: 24px 32px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: #1d4ed8;
+        }
+
+        .availability-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .calendar-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+        }
+
+        .calendar-card h3 {
+            margin-bottom: 16px;
+            font-size: 18px;
+            color: #0f172a;
+        }
+
+        #availability-calendar {
+            margin-top: 10px;
+        }
+
+        .slots-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 1024px) {
+            .availability-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="availability-page">
+
+        <a href="dashboard-demo.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+            </svg>
+            Back to Dashboard
+        </a>
+
+        <div class="page-header">
+            <h1>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="vertical-align: middle; margin-right: 8px;">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                Manage Your Availability
+            </h1>
+            <p>Set your available time slots and they'll appear on your calendar</p>
+        </div>
+
+        <div class="availability-grid">
+
+            <!-- CALENDAR -->
+            <div class="calendar-card">
+                <h3>Calendar View</h3>
+                <div id="availability-calendar"></div>
+            </div>
+
+            <!-- ADD SLOT FORM & LIST -->
+            <div class="slots-card">
+                <h3>Add Availability Slot</h3>
+
+                <!-- ADD SLOT FORM -->
+                <div class="add-slot-form">
+                    <div class="field">
+                        <label for="slot-date">Date</label>
+                        <input type="date" id="slot-date" />
+                    </div>
+
+                    <div class="field">
+                        <label for="slot-start-time">Start Time</label>
+                        <select id="slot-start-time">
+                            <option value="">Select Time</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="slot-end-time">End Time</label>
+                        <select id="slot-end-time">
+                            <option value="">Select Time</option>
+                        </select>
+                    </div>
+
+                    <button id="add-slot-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Add Slot
+                    </button>
+                </div>
+
+                <!-- ERROR MESSAGE -->
+                <div id="slot-error"></div>
+
+                <!-- SLOTS COUNT -->
+                <div id="slots-count" style="margin-top: 20px; margin-bottom: 16px;"></div>
+
+                <!-- SLOTS LIST -->
+                <div id="slots-list">
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Loading slots...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Availability Module with Dates -->
+    <script type="module">
+        const TIME_SLOTS = [
+            "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
+            "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+            "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+            "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
+            "18:00", "18:30", "19:00", "19:30", "20:00", "20:30",
+            "21:00", "21:30", "22:00", "22:30", "23:00"
+        ];
+
+        let demoSlots = [
+            { id: "1", date: "2026-02-10", startTime: "10:00", endTime: "11:00", status: "available" },
+            { id: "2", date: "2026-02-10", startTime: "14:00", endTime: "15:30", status: "available" },
+            { id: "3", date: "2026-02-12", startTime: "09:00", endTime: "10:00", status: "available" },
+            { id: "4", date: "2026-02-12", startTime: "16:00", endTime: "17:00", status: "booked" },
+            { id: "5", date: "2026-02-14", startTime: "11:00", endTime: "12:30", status: "available" },
+        ];
+
+        let calendar = null;
+
+        function formatTimeDisplay(time) {
+            const [hours, mins] = time.split(":").map(Number);
+            const period = hours >= 12 ? "PM" : "AM";
+            const displayHours = hours % 12 || 12;
+            return `${displayHours}:${mins.toString().padStart(2, "0")} ${period}`;
+        }
+
+        function formatDateDisplay(dateStr) {
+            const date = new Date(dateStr + 'T00:00:00');
+            const options = { weekday: 'short', month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function timeToMinutes(time) {
+            const [hours, mins] = time.split(":").map(Number);
+            return hours * 60 + mins;
+        }
+
+        function calculateDuration(startTime, endTime) {
+            return timeToMinutes(endTime) - timeToMinutes(startTime);
+        }
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toast-container") || createToastContainer();
+            const toast = document.createElement("div");
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+      <span class="toast-icon">${type === "success" ? "✓" : type === "error" ? "✕" : "ℹ"}</span>
+      <span class="toast-message">${message}</span>
+    `;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add("show"), 10);
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function createToastContainer() {
+            const container = document.createElement("div");
+            container.id = "toast-container";
+            container.className = "toast-container";
+            document.body.appendChild(container);
+            return container;
+        }
+
+        // Initialize calendar
+        function initCalendar() {
+            const calendarEl = document.getElementById("availability-calendar");
+            if (!calendarEl) return;
+
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: "dayGridMonth",
+                height: 500,
+                headerToolbar: {
+                    left: "prev,next today",
+                    center: "title",
+                    right: "dayGridMonth,timeGridWeek"
+                },
+                events: [],
+                eventClick: function (info) {
+                    const event = info.event;
+                    alert(`${event.title}\n${event.extendedProps.time || ""}`);
+                },
+                dateClick: function (info) {
+                    document.getElementById("slot-date").value = info.dateStr;
+                }
+            });
+
+            calendar.render();
+            updateCalendar();
+        }
+
+        // Update calendar with slots
+        function updateCalendar() {
+            if (!calendar) return;
+
+            // Clear existing events
+            calendar.getEvents().forEach(event => event.remove());
+
+            // Add slots as events
+            demoSlots.forEach(slot => {
+                const [startHour, startMin] = slot.startTime.split(":").map(Number);
+                const [endHour, endMin] = slot.endTime.split(":").map(Number);
+
+                const startDate = new Date(slot.date + 'T00:00:00');
+                startDate.setHours(startHour, startMin, 0);
+
+                const endDate = new Date(slot.date + 'T00:00:00');
+                endDate.setHours(endHour, endMin, 0);
+
+                let backgroundColor, borderColor;
+                if (slot.status === "booked") {
+                    backgroundColor = "#2563eb";
+                    borderColor = "#1d4ed8";
+                } else {
+                    backgroundColor = "#16a34a";
+                    borderColor = "#15803d";
+                }
+
+                calendar.addEvent({
+                    title: slot.status === "booked" ? "Booked" : "Available",
+                    start: startDate,
+                    end: endDate,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    extendedProps: {
+                        slotId: slot.id,
+                        status: slot.status,
+                        time: `${formatTimeDisplay(slot.startTime)} - ${formatTimeDisplay(slot.endTime)}`
+                    }
+                });
+            });
+        }
+
+        // Populate selects
+        const dateInput = document.getElementById("slot-date");
+        const startTimeSelect = document.getElementById("slot-start-time");
+        const endTimeSelect = document.getElementById("slot-end-time");
+
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        dateInput.value = today;
+
+        const timeOptions = TIME_SLOTS.map(time =>
+            `<option value="${time}">${formatTimeDisplay(time)}</option>`
+        ).join("");
+
+        startTimeSelect.innerHTML = '<option value="">Select Time</option>' + timeOptions;
+        endTimeSelect.innerHTML = '<option value="">Select Time</option>' + timeOptions;
+
+        // Auto-set end time
+        startTimeSelect.addEventListener("change", () => {
+            const startTime = startTimeSelect.value;
+            if (startTime) {
+                const startIndex = TIME_SLOTS.indexOf(startTime);
+                const defaultEndIndex = Math.min(startIndex + 2, TIME_SLOTS.length - 1);
+                endTimeSelect.value = TIME_SLOTS[defaultEndIndex];
+            }
+        });
+
+        // Render slots
+        function renderSlots() {
+            const slotsList = document.getElementById("slots-list");
+            const slotsCount = document.getElementById("slots-count");
+
+            if (demoSlots.length === 0) {
+                slotsList.innerHTML = `
+        <div class="empty-state">
+          <p>No availability slots added yet</p>
+          <p class="hint">Add your available time slots and they'll appear on the calendar</p>
+        </div>
+      `;
+                slotsCount.innerHTML = "";
+                return;
+            }
+
+            // Update count
+            const available = demoSlots.filter(s => s.status === "available").length;
+            const booked = demoSlots.filter(s => s.status === "booked").length;
+            slotsCount.innerHTML = `
+      <span class="count-item"><strong>${demoSlots.length}</strong> Total</span>
+      <span class="count-divider">·</span>
+      <span class="count-item available"><strong>${available}</strong> Available</span>
+      ${booked > 0 ? `<span class="count-divider">·</span><span class="count-item booked"><strong>${booked}</strong> Booked</span>` : ""}
+    `;
+
+            // Sort by date
+            const sortedSlots = [...demoSlots].sort((a, b) => {
+                const dateDiff = new Date(a.date) - new Date(b.date);
+                if (dateDiff !== 0) return dateDiff;
+                return timeToMinutes(a.startTime) - timeToMinutes(b.startTime);
+            });
+
+            // Group by date
+            const slotsByDate = {};
+            sortedSlots.forEach(slot => {
+                if (!slotsByDate[slot.date]) {
+                    slotsByDate[slot.date] = [];
+                }
+                slotsByDate[slot.date].push(slot);
+            });
+
+            let html = "";
+            for (const [date, slots] of Object.entries(slotsByDate)) {
+                html += `<div class="day-group"><div class="day-label">${formatDateDisplay(date)}</div><div class="day-slots">`;
+
+                for (const slot of slots) {
+                    const isBooked = slot.status === "booked";
+                    const statusClass = isBooked ? "slot-booked" : "slot-available";
+                    const statusBadge = isBooked ? '<span class="status-badge booked">Booked</span>' : "";
+
+                    html += `
+          <div class="slot ${statusClass}" data-slot-id="${slot.id}">
+            <div class="slot-time">
+              <span class="time-range">${formatTimeDisplay(slot.startTime)} – ${formatTimeDisplay(slot.endTime)}</span>
+              ${statusBadge}
+            </div>
+            <div class="slot-actions">
+              ${!isBooked ? `
+                <button class="btn-icon btn-edit" onclick="editSlot('${slot.id}')" title="Edit">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                </button>
+                <button class="btn-icon btn-delete" onclick="deleteSlot('${slot.id}')" title="Delete">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
+              ` : `<span class="locked-icon" title="Cannot modify booked slot">🔒</span>`}
+            </div>
+          </div>
+        `;
+                }
+
+                html += `</div></div>`;
+            }
+
+            slotsList.innerHTML = html;
+        }
+
+        // Add slot
+        document.getElementById("add-slot-btn").addEventListener("click", () => {
+            const date = dateInput.value;
+            const startTime = startTimeSelect.value;
+            const endTime = endTimeSelect.value;
+
+            if (!date || !startTime || !endTime) {
+                showToast("Please select date, start time, and end time", "error");
+                return;
+            }
+
+            // Check if date is in the past
+            const selectedDate = new Date(date + 'T00:00:00');
+            const todayDate = new Date();
+            todayDate.setHours(0, 0, 0, 0);
+
+            if (selectedDate < todayDate) {
+                showToast("Cannot add slots for past dates", "error");
+                return;
+            }
+
+            const duration = calculateDuration(startTime, endTime);
+            if (duration < 30) {
+                showToast("Minimum slot duration is 30 minutes", "error");
+                return;
+            }
+            if (duration > 180) {
+                showToast("Maximum slot duration is 3 hours", "error");
+                return;
+            }
+
+            // Check for overlaps on same date
+            const overlapping = demoSlots.find(s => {
+                if (s.date !== date) return false;
+                const s1 = timeToMinutes(startTime);
+                const e1 = timeToMinutes(endTime);
+                const s2 = timeToMinutes(s.startTime);
+                const e2 = timeToMinutes(s.endTime);
+                return s1 < e2 && s2 < e1;
+            });
+
+            if (overlapping) {
+                showToast("This slot overlaps with an existing slot", "error");
+                return;
+            }
+
+            const newSlot = {
+                id: Date.now().toString(),
+                date,
+                startTime,
+                endTime,
+                status: "available"
+            };
+
+            demoSlots.push(newSlot);
+
+            dateInput.value = today;
+            startTimeSelect.value = "";
+            endTimeSelect.value = "";
+
+            renderSlots();
+            updateCalendar();
+            showToast("Slot added successfully!", "success");
+        });
+
+        // Edit slot
+        window.editSlot = (id) => {
+            const slot = demoSlots.find(s => s.id === id);
+            if (!slot) return;
+            showToast(`Edit feature: ${formatDateDisplay(slot.date)} ${formatTimeDisplay(slot.startTime)}-${formatTimeDisplay(slot.endTime)}`, "info");
+        };
+
+        // Delete slot
+        window.deleteSlot = (id) => {
+            const slot = demoSlots.find(s => s.id === id);
+            if (!slot) return;
+
+            if (confirm(`Delete slot: ${formatDateDisplay(slot.date)} ${formatTimeDisplay(slot.startTime)}-${formatTimeDisplay(slot.endTime)}?`)) {
+                demoSlots = demoSlots.filter(s => s.id !== id);
+                renderSlots();
+                updateCalendar();
+                showToast("Slot deleted successfully!", "success");
+            }
+        };
+
+        // Initial render
+        initCalendar();
+        renderSlots();
+    </script>
+
+    <!-- Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+
+</html>

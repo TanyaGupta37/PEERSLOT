@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>PeerSlot - Peer Availability</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="availability.css">
+
+    <!-- FullCalendar -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+    <style>
+        .peer-availability-page {
+            min-height: 100vh;
+            background: #f4f6fb;
+            padding: 24px 32px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            color: #0f172a;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #2563eb;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            color: #1d4ed8;
+        }
+
+        .peer-info-card {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .peer-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 600;
+        }
+
+        .peer-details h2 {
+            margin: 0 0 8px 0;
+            font-size: 24px;
+            color: #0f172a;
+        }
+
+        .peer-details p {
+            margin: 0;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .availability-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .calendar-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+        }
+
+        .calendar-card h3 {
+            margin-bottom: 16px;
+            font-size: 18px;
+            color: #0f172a;
+        }
+
+        #peer-calendar {
+            margin-top: 10px;
+        }
+
+        .slots-card {
+            background: white;
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .read-only-badge {
+            display: inline-block;
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 12px;
+        }
+
+        .book-slot-btn {
+            background: linear-gradient(135deg, #2563eb, #1e40af);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .book-slot-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        @media (max-width: 1024px) {
+            .availability-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="peer-availability-page">
+
+        <a href="dashboard.html" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="19" y1="12" x2="5" y2="12" />
+                <polyline points="12 19 5 12 12 5" />
+            </svg>
+            Back to Dashboard
+        </a>
+
+        <!-- Peer Info -->
+        <div class="peer-info-card" id="peer-info">
+            <div class="peer-avatar" id="peer-avatar">?</div>
+            <div class="peer-details">
+                <h2 id="peer-name">Loading...</h2>
+                <p id="peer-subjects">Loading subjects...</p>
+            </div>
+        </div>
+
+        <div class="page-header">
+            <h1>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="vertical-align: middle; margin-right: 8px;">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                </svg>
+                Peer's Availability
+                <span class="read-only-badge">Read-Only</span>
+            </h1>
+            <p>View when this peer is available for sessions</p>
+        </div>
+
+        <div class="availability-grid">
+
+            <!-- CALENDAR -->
+            <div class="calendar-card">
+                <h3>Calendar View</h3>
+                <div id="peer-calendar"></div>
+            </div>
+
+            <!-- SLOTS LIST -->
+            <div class="slots-card">
+                <h3>Available Slots</h3>
+
+                <!-- SLOTS COUNT -->
+                <div id="slots-count" style="margin-top: 12px; margin-bottom: 16px;"></div>
+
+                <!-- SLOTS LIST -->
+                <div id="slots-list">
+                    <div class="loading-state">
+                        <div class="spinner"></div>
+                        <p>Loading availability...</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Firebase & Peer Availability Module -->
+    <script type="module">
+        // TC-09: View another student's availability
+        import { auth, db } from "./firebase.js";
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import {
+            collection,
+            getDocs,
+            doc,
+            getDoc,
+            query,
+            where,
+            orderBy
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        let currentUser = null;
+        let peerSlots = [];
+        let calendar = null;
+        let peerId = null;
+
+        // Get peer ID from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        peerId = urlParams.get('peerId');
+
+        if (!peerId) {
+            alert("No peer selected");
+            window.location.href = "dashboard.html";
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            currentUser = user;
+            await loadPeerInfo();
+            await loadPeerSlots();
+        });
+
+        // Load peer information
+        async function loadPeerInfo() {
+            try {
+                const userDoc = await getDoc(doc(db, "users", peerId));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    document.getElementById("peer-name").textContent = userData.name || "Unknown User";
+                    document.getElementById("peer-avatar").textContent = (userData.name || "?")[0].toUpperCase();
+
+                    const subjects = userData.subjects || [];
+                    document.getElementById("peer-subjects").textContent =
+                        subjects.length > 0 ? subjects.join(", ") : "No subjects listed";
+                }
+            } catch (error) {
+                console.error("Error loading peer info:", error);
+            }
+        }
+
+        // AC7: View availability of another student (read-only)
+        async function loadPeerSlots() {
+            try {
+                const slotsRef = collection(db, "availabilitySlots");
+                const q = query(
+                    slotsRef,
+                    where("userId", "==", peerId),
+                    where("status", "==", "available"), // Only show available slots
+                    orderBy("date", "asc")
+                );
+
+                const snapshot = await getDocs(q);
+                peerSlots = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                // Filter out past slots
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                peerSlots = peerSlots.filter(slot => {
+                    const slotDate = new Date(slot.date + 'T00:00:00');
+                    return slotDate >= today;
+                });
+
+                renderSlots();
+                updateCalendar();
+            } catch (error) {
+                console.error("Error loading peer slots:", error);
+                showToast("Error loading peer availability", "error");
+            }
+        }
+
+        function formatTimeDisplay(time) {
+            const [hours, mins] = time.split(":").map(Number);
+            const period = hours >= 12 ? "PM" : "AM";
+            const displayHours = hours % 12 || 12;
+            return `${displayHours}:${mins.toString().padStart(2, "0")} ${period}`;
+        }
+
+        function formatDateDisplay(dateStr) {
+            const date = new Date(dateStr + 'T00:00:00');
+            const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        function timeToMinutes(time) {
+            const [hours, mins] = time.split(":").map(Number);
+            return hours * 60 + mins;
+        }
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById("toast-container") || createToastContainer();
+            const toast = document.createElement("div");
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+      <span class="toast-icon">${type === "success" ? "✓" : type === "error" ? "✕" : "ℹ"}</span>
+      <span class="toast-message">${message}</span>
+    `;
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add("show"), 10);
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function createToastContainer() {
+            const container = document.createElement("div");
+            container.id = "toast-container";
+            container.className = "toast-container";
+            document.body.appendChild(container);
+            return container;
+        }
+
+        // Initialize calendar
+        function initCalendar() {
+            const calendarEl = document.getElementById("peer-calendar");
+            if (!calendarEl) return;
+
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: "dayGridMonth",
+                height: 500,
+                headerToolbar: {
+                    left: "prev,next today",
+                    center: "title",
+                    right: "dayGridMonth,timeGridWeek"
+                },
+                events: [],
+                eventClick: function (info) {
+                    const event = info.event;
+                    const slotId = event.extendedProps.slotId;
+                    if (slotId) {
+                        if (confirm(`Book this slot?\n${event.extendedProps.time}`)) {
+                            showToast("Booking feature coming soon!", "info");
+                        }
+                    }
+                }
+            });
+
+            calendar.render();
+        }
+
+        // Update calendar with slots
+        function updateCalendar() {
+            if (!calendar) return;
+
+            calendar.getEvents().forEach(event => event.remove());
+
+            peerSlots.forEach(slot => {
+                const [startHour, startMin] = slot.startTime.split(":").map(Number);
+                const [endHour, endMin] = slot.endTime.split(":").map(Number);
+
+                const startDate = new Date(slot.date + 'T00:00:00');
+                startDate.setHours(startHour, startMin, 0);
+
+                const endDate = new Date(slot.date + 'T00:00:00');
+                endDate.setHours(endHour, endMin, 0);
+
+                calendar.addEvent({
+                    title: "Available",
+                    start: startDate,
+                    end: endDate,
+                    backgroundColor: "#16a34a",
+                    borderColor: "#15803d",
+                    extendedProps: {
+                        slotId: slot.id,
+                        time: `${formatTimeDisplay(slot.startTime)} - ${formatTimeDisplay(slot.endTime)}`
+                    }
+                });
+            });
+        }
+
+        // Render slots (read-only)
+        function renderSlots() {
+            const slotsList = document.getElementById("slots-list");
+            const slotsCount = document.getElementById("slots-count");
+
+            if (peerSlots.length === 0) {
+                slotsList.innerHTML = `
+        <div class="empty-state">
+          <p>No upcoming availability</p>
+          <p class="hint">This peer hasn't added any available slots yet</p>
+        </div>
+      `;
+                slotsCount.innerHTML = "";
+                return;
+            }
+
+            slotsCount.innerHTML = `
+      <span class="count-item"><strong>${peerSlots.length}</strong> Available Slots</span>
+    `;
+
+            const sortedSlots = [...peerSlots].sort((a, b) => {
+                const dateDiff = new Date(a.date) - new Date(b.date);
+                if (dateDiff !== 0) return dateDiff;
+                return timeToMinutes(a.startTime) - timeToMinutes(b.startTime);
+            });
+
+            const slotsByDate = {};
+            sortedSlots.forEach(slot => {
+                if (!slotsByDate[slot.date]) {
+                    slotsByDate[slot.date] = [];
+                }
+                slotsByDate[slot.date].push(slot);
+            });
+
+            let html = "";
+            for (const [date, slots] of Object.entries(slotsByDate)) {
+                html += `<div class="day-group"><div class="day-label">${formatDateDisplay(date)}</div><div class="day-slots">`;
+
+                for (const slot of slots) {
+                    html += `
+          <div class="slot slot-available" data-slot-id="${slot.id}">
+            <div class="slot-time">
+              <span class="time-range">${formatTimeDisplay(slot.startTime)} – ${formatTimeDisplay(slot.endTime)}</span>
+            </div>
+            <div class="slot-actions">
+              <button class="book-slot-btn" onclick="bookSlot('${slot.id}', '${formatDateDisplay(date)}', '${formatTimeDisplay(slot.startTime)}', '${formatTimeDisplay(slot.endTime)}')">
+                Book
+              </button>
+            </div>
+          </div>
+        `;
+                }
+
+                html += `</div></div>`;
+            }
+
+            slotsList.innerHTML = html;
+        }
+
+        window.bookSlot = (slotId, date, startTime, endTime) => {
+            if (confirm(`Book this slot?\n${date}\n${startTime} - ${endTime}`)) {
+                showToast("Booking feature coming soon!", "info");
+            }
+        };
+
+        // Initialize
+        initCalendar();
+    </script>
+
+    <!-- Lucide Icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+
+</html>

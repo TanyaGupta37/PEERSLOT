@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard-Availability Sync Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .card h2 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .test-section {
+            margin-bottom: 20px;
+        }
+
+        .test-section h3 {
+            color: #4a5568;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .btn-add {
+            background: #16a34a;
+            color: white;
+        }
+
+        .btn-add:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
+        }
+
+        .btn-edit {
+            background: #2563eb;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-delete {
+            background: #dc2626;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+        }
+
+        .status-log {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .log-entry {
+            padding: 6px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .log-time {
+            color: #718096;
+            margin-right: 10px;
+        }
+
+        .log-event {
+            color: #2d3748;
+        }
+
+        .log-success {
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        .log-error {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .info-box {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-box h2 {
+            color: #1a202c;
+            margin-bottom: 15px;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            padding: 10px 0;
+            color: #4a5568;
+            display: flex;
+            align-items: start;
+            gap: 10px;
+        }
+
+        .info-list li::before {
+            content: "✓";
+            color: #16a34a;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        @media (max-width: 768px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Dashboard-Availability Sync Test</h1>
+        <p class="subtitle">Real-time synchronization demonstration</p>
+
+        <div class="test-grid">
+            <!-- Availability Actions -->
+            <div class="card">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Availability Actions
+                </h2>
+
+                <div class="test-section">
+                    <h3>Simulate User Actions</h3>
+                    <div class="test-controls">
+                        <button class="btn-add" onclick="simulateAddSlot()">
+                            ➕ Add Slot
+                        </button>
+                        <button class="btn-edit" onclick="simulateEditSlot()">
+                            ✏️ Edit Slot
+                        </button>
+                        <button class="btn-delete" onclick="simulateDeleteSlot()">
+                            🗑️ Delete Slot
+                        </button>
+                    </div>
+                </div>
+
+                <div class="test-section">
+                    <h3>Manual Trigger</h3>
+                    <div class="test-controls">
+                        <button class="btn-edit" onclick="triggerSyncEvent()">
+                            📡 Dispatch Sync Event
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Status -->
+            <div class="card">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="9" y1="3" x2="9" y2="21"/>
+                        <line x1="15" y1="3" x2="15" y2="21"/>
+                        <line x1="3" y1="9" x2="21" y2="9"/>
+                        <line x1="3" y1="15" x2="21" y2="15"/>
+                    </svg>
+                    Dashboard Calendar
+                </h2>
+
+                <div class="test-section">
+                    <h3>Sync Status</h3>
+                    <div style="margin-bottom: 15px;">
+                        <span class="badge badge-success" id="sync-status">Listening for events</span>
+                    </div>
+                    <div style="color: #4a5568; font-size: 0.9rem;">
+                        Event Count: <strong id="event-count">0</strong>
+                    </div>
+                </div>
+
+                <div class="test-section">
+                    <h3>Event Log</h3>
+                    <div class="status-log" id="event-log">
+                        <div class="log-entry">
+                            <span class="log-time">--:--:--</span>
+                            <span class="log-event">Waiting for events...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Info -->
+        <div class="info-box">
+            <h2>✨ How It Works</h2>
+            <ul class="info-list">
+                <li>
+                    <span>When you add, edit, or delete an availability slot, the <code>availability-ui.js</code> module dispatches a custom event called <strong>availabilitySlotsChanged</strong></span>
+                </li>
+                <li>
+                    <span>The <code>dashboard-calendar.js</code> module listens for this event using <code>window.addEventListener()</code></span>
+                </li>
+                <li>
+                    <span>When the event is received, the calendar automatically calls <code>loadAvailabilityToCalendar()</code> to refresh its display</span>
+                </li>
+                <li>
+                    <span>This creates a <strong>real-time, decoupled synchronization</strong> between components without tight coupling</span>
+                </li>
+                <li>
+                    <span>The pattern uses the <strong>Observer/Publisher-Subscriber</strong> design pattern via browser's native CustomEvent API</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let eventCount = 0;
+
+        // Listen for the actual sync event
+        window.addEventListener('availabilitySlotsChanged', (event) => {
+            eventCount++;
+            updateEventCount();
+            logEvent('Received sync event', 'success');
+            updateSyncStatus('Synced!', 'success');
+            
+            // Reset status after 2 seconds
+            setTimeout(() => {
+                updateSyncStatus('Listening for events', 'success');
+            }, 2000);
+        });
+
+        function simulateAddSlot() {
+            logEvent('User clicked: Add Slot', 'info');
+            setTimeout(() => {
+                logEvent('Slot added to Firebase', 'info');
+                triggerSyncEvent();
+            }, 500);
+        }
+
+        function simulateEditSlot() {
+            logEvent('User clicked: Edit Slot', 'info');
+            setTimeout(() => {
+                logEvent('Slot updated in Firebase', 'info');
+                triggerSyncEvent();
+            }, 500);
+        }
+
+        function simulateDeleteSlot() {
+            logEvent('User clicked: Delete Slot', 'info');
+            setTimeout(() => {
+                logEvent('Slot deleted from Firebase', 'info');
+                triggerSyncEvent();
+            }, 500);
+        }
+
+        function triggerSyncEvent() {
+            logEvent('Dispatching availabilitySlotsChanged event', 'info');
+            const event = new CustomEvent('availabilitySlotsChanged', {
+                detail: { 
+                    slots: [],
+                    timestamp: new Date().toISOString()
+                }
+            });
+            window.dispatchEvent(event);
+        }
+
+        function logEvent(message, type = 'info') {
+            const log = document.getElementById('event-log');
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            
+            const typeClass = type === 'success' ? 'log-success' : type === 'error' ? 'log-error' : 'log-event';
+            
+            entry.innerHTML = `
+                <span class="log-time">${time}</span>
+                <span class="${typeClass}">${message}</span>
+            `;
+            
+            log.insertBefore(entry, log.firstChild);
+            
+            // Keep only last 10 entries
+            while (log.children.length > 10) {
+                log.removeChild(log.lastChild);
+            }
+        }
+
+        function updateEventCount() {
+            document.getElementById('event-count').textContent = eventCount;
+        }
+
+        function updateSyncStatus(text, type) {
+            const badge = document.getElementById('sync-status');
+            badge.textContent = text;
+            badge.className = `badge badge-${type}`;
+        }
+
+        // Initial log
+        logEvent('Test page loaded - Ready to test synchronization', 'success');
+    </script>
+</body>
+</html>
