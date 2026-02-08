@@ -73,7 +73,8 @@ export const BUSINESS_RULES = {
 export const SLOT_STATUS = {
   AVAILABLE: "available",
   BOOKED: "booked",
-  BLOCKED: "blocked"
+  BLOCKED: "blocked",
+  MATCHED: "matched"
 };
 
 // ============================================
@@ -322,8 +323,8 @@ export async function updateSlot(slotId, updateData) {
     throw new Error("You can only edit your own slots");
   }
 
-  if (slot.status === SLOT_STATUS.BOOKED) {
-    throw new Error("Cannot edit a booked slot");
+  if (slot.status !== SLOT_STATUS.AVAILABLE) {
+    throw new Error("Cannot edit this slot");
   }
 
   // Fetch all slots for overlap validation
@@ -382,8 +383,8 @@ export async function deleteSlot(slotId) {
     throw new Error("You can only delete your own slots");
   }
 
-  if (slot.status === SLOT_STATUS.BOOKED) {
-    throw new Error("Cannot delete a booked slot. Please cancel the booking first.");
+  if (slot.status !== SLOT_STATUS.AVAILABLE) {
+    throw new Error("Cannot delete this slot");
   }
 
   await deleteDoc(slotRef);

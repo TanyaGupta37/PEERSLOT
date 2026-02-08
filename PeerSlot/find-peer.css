@@ -29,11 +29,68 @@
   align-items: center;
   justify-content: space-between;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .slot-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 12px 28px rgba(0,0,0,0.1);
+}
+
+.slot-card:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.18), 0 12px 28px rgba(0,0,0,0.1);
+}
+
+/* ===== MATCH REQUEST MODAL (FIND PEER) ===== */
+
+.peer-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.peer-summary-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.peer-summary-title h3 {
+  margin: 0;
+}
+
+.peer-summary-title p {
+  margin: 4px 0 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.peer-summary-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.peer-summary-note {
+  font-size: 13px;
+  color: #475569;
+  margin: 10px 0 0 0;
+}
+
+.modal-error {
+  color: #dc2626;
+  font-size: 13px;
+  margin: 10px 0 0 0;
 }
 
 .slot-left {

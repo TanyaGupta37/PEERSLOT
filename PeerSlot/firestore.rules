@@ -28,7 +28,7 @@ service cloud.firestore {
       allow create: if request.auth != null && 
                        request.resource.data.userId == request.auth.uid &&
                        request.resource.data.keys().hasAll(['userId', 'date', 'startTime', 'endTime', 'status', 'createdAt', 'updatedAt']) &&
-                       request.resource.data.status in ['available', 'booked', 'blocked'];
+                       request.resource.data.status in ['available', 'booked', 'blocked', 'matched'];
       
       // Users can update their own available slots (not booked ones)
       allow update: if request.auth != null && 
@@ -40,6 +40,22 @@ service cloud.firestore {
       allow delete: if request.auth != null && 
                        resource.data.userId == request.auth.uid &&
                        resource.data.status == "available";
+    }
+
+    // Match Requests collection
+    match /matchRequests/{requestId} {
+      // Requester can create a request for any slot (slot validation is handled in app/transaction)
+      allow create: if request.auth != null && request.resource.data.requesterId == request.auth.uid;
+
+      // Requester or slot owner can read
+      allow read: if request.auth != null &&
+        (resource.data.requesterId == request.auth.uid || resource.data.slotOwnerId == request.auth.uid);
+
+      // Only slot owner can accept (or otherwise update) the request
+      allow update: if request.auth != null && resource.data.slotOwnerId == request.auth.uid;
+
+      // No deletes from client
+      allow delete: if false;
     }
   }
 }
