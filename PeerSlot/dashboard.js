@@ -10,6 +10,33 @@ function getAvatarColor(letter) {
   return colors[letter.charCodeAt(0) % colors.length];
 }
 
+/**
+ * Update dashboard stats with real data from availability slots
+ */
+async function updateDashboardStats() {
+  try {
+    const { getSlotCount } = await import("./availability.js");
+    const counts = await getSlotCount();
+
+    // Update sessions booked stat
+    const statsContainer = document.querySelector('.stats');
+    if (statsContainer) {
+      const sessionsStat = statsContainer.querySelector('.stat:nth-child(3)');
+      if (sessionsStat) {
+        sessionsStat.innerHTML = `
+          <i data-lucide="calendar"></i> Sessions booked: ${counts.booked}
+        `;
+        // Reinitialize icons
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error updating dashboard stats:", err);
+  }
+}
+
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "login.html";
@@ -36,4 +63,12 @@ onAuthStateChanged(auth, async (user) => {
 
   avatar.innerText = letter;
   avatar.style.background = getAvatarColor(letter);
+
+  // Update stats with real data
+  await updateDashboardStats();
+
+  // Listen for availability slot changes and update stats
+  window.addEventListener('availabilitySlotsChanged', () => {
+    updateDashboardStats();
+  });
 });

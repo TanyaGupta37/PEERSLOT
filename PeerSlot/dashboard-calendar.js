@@ -123,22 +123,19 @@ async function loadAvailabilityToCalendar(calendar) {
 }
 
 /**
- * Add fallback static events if dynamic loading fails
+ * Add fallback message if dynamic loading fails
  */
 function addFallbackEvents(calendar) {
+  // Show a subtle background event with helpful message
+  const today = new Date();
   calendar.addEvent({
-    title: "DSA with Rohan",
-    start: new Date().setHours(18, 0),
-    end: new Date().setHours(19, 0),
-    backgroundColor: "#2563eb",
-    borderColor: "#2563eb"
-  });
-
-  calendar.addEvent({
-    title: "Slot Pending: Ananya",
-    start: new Date(new Date().setDate(new Date().getDate() + 1)),
-    backgroundColor: "#f59e0b",
-    borderColor: "#f59e0b"
+    title: "Add your availability slots →",
+    start: today,
+    allDay: true,
+    display: 'background',
+    backgroundColor: '#f0f9ff',
+    borderColor: '#bfdbfe',
+    classNames: ['availability-hint']
   });
 }
 
@@ -150,4 +147,3 @@ window.refreshDashboardCalendar = function () {
     loadAvailabilityToCalendar(dashboardCalendar);
   }
 };
-
