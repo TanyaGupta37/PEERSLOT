@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadAvailabilityToCalendar(calendar) {
   try {
     // Import availability functions dynamically
-    const { fetchOwnSlotsSorted, SLOT_STATUS, formatTimeDisplay, DAYS } = await import("./availability.js");
+    const { fetchOwnSlotsSorted, SLOT_STATUS, formatTimeDisplay } = await import("./availability.js");
     const { auth } = await import("./firebase.js");
     const { onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
 
@@ -60,30 +60,17 @@ async function loadAvailabilityToCalendar(calendar) {
         // Clear existing events
         calendar.getEvents().forEach(event => event.remove());
 
-        // Get current week dates
-        const today = new Date();
-        const currentDay = today.getDay(); // 0 = Sunday
-        const mondayOffset = currentDay === 0 ? -6 : 1 - currentDay;
-
         // Add slots as events
         slots.forEach(slot => {
-          const dayIndex = DAYS.indexOf(slot.day);
-          if (dayIndex === -1) return;
-
-          // Calculate date for this slot based on day of week
-          const slotDate = new Date(today);
-          slotDate.setDate(today.getDate() + mondayOffset + dayIndex);
-
-          const dateStr = slotDate.toISOString().split("T")[0];
-
           // Parse times
           const [startHour, startMin] = slot.startTime.split(":").map(Number);
           const [endHour, endMin] = slot.endTime.split(":").map(Number);
 
-          const startDate = new Date(slotDate);
+          // Use the slot's date directly
+          const startDate = new Date(slot.date + 'T00:00:00');
           startDate.setHours(startHour, startMin, 0);
 
-          const endDate = new Date(slotDate);
+          const endDate = new Date(slot.date + 'T00:00:00');
           endDate.setHours(endHour, endMin, 0);
 
           // Determine color based on status

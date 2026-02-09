@@ -132,6 +132,15 @@ export function timesOverlap(start1, end1, start2, end2) {
   return s1 < e2 && s2 < e1;
 }
 
+/**
+ * Format date for display (e.g., "Mon, Feb 10, 2026")
+ */
+export function formatDateDisplay(dateStr) {
+  const date = new Date(dateStr + 'T00:00:00');
+  const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' };
+  return date.toLocaleDateString('en-US', options);
+}
+
 // ============================================
 // VALIDATION FUNCTIONS
 // ============================================
@@ -141,16 +150,25 @@ export function timesOverlap(start1, end1, start2, end2) {
  * Returns { valid: boolean, error: string | null }
  */
 export function validateSlot(slotData, existingSlots = []) {
-  const { day, startTime, endTime } = slotData;
+  const { date, startTime, endTime } = slotData;
 
   // Check required fields
-  if (!day || !startTime || !endTime) {
+  if (!date || !startTime || !endTime) {
     return { valid: false, error: "Please fill all fields" };
   }
 
-  // Validate day
-  if (!DAYS.includes(day)) {
-    return { valid: false, error: "Invalid day selected" };
+  // Validate date format (YYYY-MM-DD)
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dateRegex.test(date)) {
+    return { valid: false, error: "Invalid date format" };
+  }
+
+  // Check if date is in the past
+  const selectedDate = new Date(date + 'T00:00:00');
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  if (selectedDate < today) {
+    return { valid: false, error: "Cannot add slots for past dates" };
   }
 
   // Validate time format
@@ -190,17 +208,17 @@ export function validateSlot(slotData, existingSlots = []) {
   }
 
   // Check slots per day limit
-  const slotsOnDay = existingSlots.filter(s => s.day === day);
-  if (slotsOnDay.length >= BUSINESS_RULES.MAX_SLOTS_PER_DAY) {
+  const slotsOnDate = existingSlots.filter(s => s.date === date);
+  if (slotsOnDate.length >= BUSINESS_RULES.MAX_SLOTS_PER_DAY) {
     return { valid: false, error: `Maximum ${BUSINESS_RULES.MAX_SLOTS_PER_DAY} slots per day` };
   }
 
   // Check for overlapping slots
-  for (const slot of slotsOnDay) {
+  for (const slot of slotsOnDate) {
     if (timesOverlap(startTime, endTime, slot.startTime, slot.endTime)) {
-      return { 
-        valid: false, 
-        error: `Overlaps with existing slot: ${getShortDay(slot.day)} ${formatTimeDisplay(slot.startTime)} - ${formatTimeDisplay(slot.endTime)}` 
+      return {
+        valid: false,
+        error: `Overlaps with existing slot: ${formatDateDisplay(slot.date)} ${formatTimeDisplay(slot.startTime)} - ${formatTimeDisplay(slot.endTime)}`
       };
     }
   }
@@ -231,7 +249,7 @@ export async function createSlot(slotData) {
 
   // Fetch existing slots for validation
   const existingSlots = await fetchOwnSlots();
-  
+
   // Validate
   const validation = validateSlot(slotData, existingSlots);
   if (!validation.valid) {
@@ -242,18 +260,18 @@ export async function createSlot(slotData) {
 
   const newSlot = {
     userId: user.uid,
-    day: slotData.day,
+    date: slotData.date,
     startTime: slotData.startTime,
     endTime: slotData.endTime,
     duration: duration,
-    isRecurring: slotData.isRecurring ?? true,
+    isRecurring: slotData.isRecurring ?? false,
     status: SLOT_STATUS.AVAILABLE,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   };
 
   const docRef = await addDoc(collection(db, "availabilitySlots"), newSlot);
-  
+
   return {
     id: docRef.id,
     ...newSlot,
@@ -278,7 +296,7 @@ export async function fetchOwnSlots() {
   );
 
   const snapshot = await getDocs(q);
-  
+
   return snapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data()
@@ -290,11 +308,11 @@ export async function fetchOwnSlots() {
  */
 export async function fetchOwnSlotsSorted() {
   const slots = await fetchOwnSlots();
-  
-  // Sort by day order, then by start time
+
+  // Sort by date, then by start time
   return slots.sort((a, b) => {
-    const dayDiff = DAYS.indexOf(a.day) - DAYS.indexOf(b.day);
-    if (dayDiff !== 0) return dayDiff;
+    const dateDiff = new Date(a.date) - new Date(b.date);
+    if (dateDiff !== 0) return dateDiff;
     return timeToMinutes(a.startTime) - timeToMinutes(b.startTime);
   });
 }
@@ -328,16 +346,16 @@ export async function updateSlot(slotId, updateData) {
 
   // Fetch all slots for overlap validation
   const existingSlots = await fetchOwnSlots();
-  
+
   // Merge update data with existing slot
-  const newSlotData = {
-    day: updateData.day ?? slot.day,
+  const updatedSlot = {
+    date: updateData.date ?? slot.date,
     startTime: updateData.startTime ?? slot.startTime,
     endTime: updateData.endTime ?? slot.endTime
   };
 
   // Validate the update
-  const validation = validateSlotUpdate(newSlotData, existingSlots, slotId);
+  const validation = validateSlotUpdate(updatedSlot, existingSlots, slotId);
   if (!validation.valid) {
     throw new Error(validation.error);
   }
@@ -411,7 +429,7 @@ export async function fetchPeerAvailability(peerId) {
   );
 
   const snapshot = await getDocs(q);
-  
+
   const slots = snapshot.docs.map(doc => ({
     id: doc.id,
     ...doc.data()
@@ -449,8 +467,9 @@ export async function getSlotCount() {
   const slots = await fetchOwnSlots();
   return {
     total: slots.length,
-    byDay: DAYS.reduce((acc, day) => {
-      acc[day] = slots.filter(s => s.day === day).length;
+    byDate: slots.reduce((acc, slot) => {
+      if (!acc[slot.date]) acc[slot.date] = 0;
+      acc[slot.date]++;
       return acc;
     }, {}),
     available: slots.filter(s => s.status === SLOT_STATUS.AVAILABLE).length,

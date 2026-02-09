@@ -8,12 +8,11 @@
 import { auth } from "./firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
-    DAYS,
     TIME_SLOTS,
     BUSINESS_RULES,
     SLOT_STATUS,
     formatTimeDisplay,
-    getShortDay,
+    formatDateDisplay,
     createSlot,
     fetchOwnSlotsSorted,
     updateSlot,
@@ -34,7 +33,7 @@ let isLoading = false;
 // ============================================
 
 const elements = {
-    daySelect: null,
+    dateInput: null,
     startTimeSelect: null,
     endTimeSelect: null,
     addSlotBtn: null,
@@ -42,7 +41,7 @@ const elements = {
     slotsCount: null,
     errorMessage: null,
     editModal: null,
-    editDaySelect: null,
+    editDateInput: null,
     editStartTimeSelect: null,
     editEndTimeSelect: null,
     editSaveBtn: null,
@@ -66,7 +65,7 @@ export function initAvailabilityUI() {
         cacheElements();
 
         // Setup UI
-        setupDaySelects();
+        setupDateInput();
         setupTimeSelects();
         setupEventListeners();
         createModals();
@@ -78,7 +77,7 @@ export function initAvailabilityUI() {
 }
 
 function cacheElements() {
-    elements.daySelect = document.getElementById("slot-day");
+    elements.dateInput = document.getElementById("slot-date");
     elements.startTimeSelect = document.getElementById("slot-start-time");
     elements.endTimeSelect = document.getElementById("slot-end-time");
     elements.addSlotBtn = document.getElementById("add-slot-btn");
@@ -91,12 +90,12 @@ function cacheElements() {
 // POPULATE SELECTS
 // ============================================
 
-function setupDaySelects() {
-    const dayOptions = `<option value="">Select Day</option>` +
-        DAYS.map(day => `<option value="${day}">${day}</option>`).join("");
-
-    if (elements.daySelect) {
-        elements.daySelect.innerHTML = dayOptions;
+function setupDateInput() {
+    if (elements.dateInput) {
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        elements.dateInput.min = today;
+        elements.dateInput.value = today;
     }
 }
 
@@ -113,12 +112,8 @@ function setupTimeSelects() {
 }
 
 function populateEditSelects() {
-    const dayOptions = DAYS.map(day => `<option value="${day}">${day}</option>`).join("");
     const timeOptions = TIME_SLOTS.map(time => `<option value="${time}">${formatTimeDisplay(time)}</option>`).join("");
 
-    if (elements.editDaySelect) {
-        elements.editDaySelect.innerHTML = dayOptions;
-    }
     if (elements.editStartTimeSelect) {
         elements.editStartTimeSelect.innerHTML = timeOptions;
     }
@@ -163,8 +158,8 @@ function createModals() {
         <h3>Edit Availability Slot</h3>
         <div class="modal-body">
           <div class="field">
-            <label>Day</label>
-            <select id="edit-day-select"></select>
+            <label>Date</label>
+            <input type="date" id="edit-date-input" />
           </div>
           <div class="field">
             <label>Start Time</label>
@@ -207,7 +202,7 @@ function createModals() {
 
     // Cache modal elements
     elements.editModal = document.getElementById("edit-slot-modal");
-    elements.editDaySelect = document.getElementById("edit-day-select");
+    elements.editDateInput = document.getElementById("edit-date-input");
     elements.editStartTimeSelect = document.getElementById("edit-start-time");
     elements.editEndTimeSelect = document.getElementById("edit-end-time");
     elements.editSaveBtn = document.getElementById("edit-save-btn");
@@ -218,6 +213,12 @@ function createModals() {
     elements.deleteSlotInfo = document.getElementById("delete-slot-info");
     elements.deleteConfirmBtn = document.getElementById("delete-confirm-btn");
     elements.deleteCancelBtn = document.getElementById("delete-cancel-btn");
+
+    // Set minimum date for edit input
+    if (elements.editDateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        elements.editDateInput.min = today;
+    }
 
     // Populate edit selects
     populateEditSelects();
@@ -340,13 +341,13 @@ function renderSlots() {
 
     for (const slot of currentSlots) {
         const isBooked = slot.status === SLOT_STATUS.BOOKED;
-        const dayShort = getShortDay(slot.day);
+        const dateDisplay = formatDateDisplay(slot.date);
         const timeRange = `${formatTimeDisplay(slot.startTime)}–${formatTimeDisplay(slot.endTime)}`;
 
         html += `
       <div class="slot" data-slot-id="${slot.id}" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; background: ${isBooked ? '#f1f5f9' : '#f8fafc'}; border-radius: 8px; margin-bottom: 8px; ${isBooked ? 'opacity: 0.7;' : ''}">
         <span style="font-size: 0.95rem; color: #334155;">
-          <strong>${dayShort}</strong> · ${timeRange}
+          <strong>${dateDisplay}</strong> · ${timeRange}
           ${isBooked ? '<span style="color: #2563eb; font-size: 0.75rem; margin-left: 8px;">● Booked</span>' : ''}
         </span>
         <span style="display: flex; gap: 8px; align-items: center;">
@@ -387,17 +388,17 @@ function updateSlotCount() {
 async function handleAddSlot() {
     if (isLoading) return;
 
-    const day = elements.daySelect?.value;
+    const date = elements.dateInput?.value;
     const startTime = elements.startTimeSelect?.value;
     const endTime = elements.endTimeSelect?.value;
 
-    // Clear previous error
+    // Clear previous errors
     if (elements.errorMessage) {
         elements.errorMessage.style.display = "none";
     }
 
-    if (!day || !startTime || !endTime) {
-        showError("Please select day, start time, and end time");
+    if (!date || !startTime || !endTime) {
+        showError("Please select date, start time, and end time");
         return;
     }
 
@@ -406,10 +407,11 @@ async function handleAddSlot() {
     elements.addSlotBtn.textContent = "Adding...";
 
     try {
-        await createSlot({ day, startTime, endTime });
+        await createSlot({ date, startTime, endTime });
 
         // Clear form
-        elements.daySelect.value = "";
+        const today = new Date().toISOString().split('T')[0];
+        elements.dateInput.value = today;
         elements.startTimeSelect.value = "";
         elements.endTimeSelect.value = "";
 
@@ -443,7 +445,7 @@ window.openEditModal = function (slotId) {
     editingSlotId = slotId;
 
     // Populate form with current values
-    elements.editDaySelect.value = slot.day;
+    elements.editDateInput.value = slot.date;
     elements.editStartTimeSelect.value = slot.startTime;
     elements.editEndTimeSelect.value = slot.endTime;
     elements.editError.textContent = "";
@@ -460,7 +462,7 @@ function closeEditModal() {
 async function handleSaveEdit() {
     if (!editingSlotId || isLoading) return;
 
-    const day = elements.editDaySelect.value;
+    const date = elements.editDateInput.value;
     const startTime = elements.editStartTimeSelect.value;
     const endTime = elements.editEndTimeSelect.value;
 
@@ -469,7 +471,7 @@ async function handleSaveEdit() {
     elements.editSaveBtn.textContent = "Saving...";
 
     try {
-        await updateSlot(editingSlotId, { day, startTime, endTime });
+        await updateSlot(editingSlotId, { date, startTime, endTime });
 
         closeEditModal();
         await loadSlots(true);
@@ -504,7 +506,7 @@ window.openDeleteModal = function (slotId) {
 
     // Show slot info
     elements.deleteSlotInfo.textContent =
-        `${slot.day} · ${formatTimeDisplay(slot.startTime)} – ${formatTimeDisplay(slot.endTime)}`;
+        `${formatDateDisplay(slot.date)} · ${formatTimeDisplay(slot.startTime)} – ${formatTimeDisplay(slot.endTime)}`;
 
     // Show modal
     elements.deleteModal.style.display = "flex";
