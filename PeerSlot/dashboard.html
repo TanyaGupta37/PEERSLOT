@@ -18,7 +18,7 @@
   <div class="sidebar">
     <h2>PeerSlot</h2>
     <a class="active">Dashboard</a>
-    <a>Find Peer</a>
+    <a href="find-peer.html">Find Peer</a>
     <a>Availability</a>
     <a>My Sessions</a>
     <a>My Peers</a>
@@ -44,26 +44,23 @@
     </div>
 
     <!-- WELCOME -->
-<div class="welcome">
-  <h1 id="welcome">
-    Welcome back, <span id="firstName"></span> <i data-lucide="hand"></i>
-  </h1>
+    <div class="welcome">
+      <h1 id="welcome">
+        Welcome back, <span id="firstName"></span> <i data-lucide="hand"></i>
+      </h1>
 
-  <div class="stats">
-    <div class="stat">
-      <i data-lucide="star"></i> 4.8 / 5
+      <div class="stats">
+        <div class="stat">
+          <i data-lucide="star"></i> 4.8 / 5
+        </div>
+        <div class="stat">
+          <i data-lucide="users"></i> Peers helped: 12
+        </div>
+        <div class="stat">
+          <i data-lucide="calendar"></i> Sessions booked: 7
+        </div>
+      </div>
     </div>
-
-    <div class="stat">
-      <i data-lucide="users"></i> Peers helped: 12
-    </div>
-
-    <div class="stat">
-      <i data-lucide="calendar"></i> Sessions booked: 7
-    </div>
-  </div>
-</div>
-
 
     <!-- GRID -->
     <div class="dashboard-grid">
@@ -71,39 +68,22 @@
       <!-- LEFT COLUMN -->
       <div>
 
-        <!-- FIND A PEER -->
+        <!-- FIND A PEER (UPDATED ONLY HERE) -->
         <div class="card">
           <h3>Find a Peer</h3>
+
           <div class="find-peer">
-            <select>
-              <option>Subject</option>
-              <option>DSA</option>
-              <option>Python</option>
-              <option>Java</option>
-              <option>C / C++</option>
-              <option>DBMS</option>
-              <option>OS</option>
-              <option>CN</option>
-              <option>Web Development</option>
-              <option>Machine Learning</option>
-              <option>Data Science</option>
-              <option>AI</option>
-              <option>IoT</option>
-              <option>Cloud Computing</option>
-              <option>Cyber Security</option>
-              <option>Blockchain</option>
-              <option>Software Engineering</option>
-              <option>Aptitude</option>
+            <select id="dashboardTopicSelect">
+              <option value="">Select Topic</option>
             </select>
 
-            <select>
-              <option>Mode</option>
-              <option>Online</option>
-              <option>In-person</option>
-              <option>Either / No preference</option>
+            <select id="dashboardModeSelect">
+              <option value="">Mode</option>
+              <option value="online">Online</option>
+              <option value="offline">In-person</option>
             </select>
 
-            <button>Find</button>
+            <button id="dashboardFindBtn">Find</button>
           </div>
         </div>
 
@@ -168,9 +148,44 @@
 
 <!-- Existing logic -->
 <script type="module" src="dashboard.js"></script>
-
-<!-- Calendar UI -->
 <script src="dashboard-calendar.js"></script>
+
+<!-- 🔹 DASHBOARD → FIND PEER INTEGRATION -->
+<script type="module">
+  import { db } from "./firebase.js";
+  import {
+    collection,
+    getDocs
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const topicSelect = document.getElementById("dashboardTopicSelect");
+  const findBtn = document.getElementById("dashboardFindBtn");
+
+  async function loadTopics() {
+    const snap = await getDocs(collection(db, "topics"));
+    snap.forEach(doc => {
+      const opt = document.createElement("option");
+      opt.value = doc.id;
+      opt.textContent = doc.data().name;
+      topicSelect.appendChild(opt);
+    });
+  }
+
+  loadTopics();
+
+  findBtn.addEventListener("click", () => {
+    const topic = topicSelect.value;
+    const mode = document.getElementById("dashboardModeSelect").value;
+
+    if (!topic) {
+      alert("Please select a topic");
+      return;
+    }
+
+    window.location.href = `find-peer.html?topic=${topic}&mode=${mode}`;
+  });
+</script>
+
 <script>
   lucide.createIcons();
 </script>

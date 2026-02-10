@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Find Peer | PeerSlot</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="dashboard-layout">
+
+  <!-- SIDEBAR (optional, keep consistent) -->
+  <div class="sidebar">
+    <h2>PeerSlot</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a class="active">Find Peer</a>
+    <a href="topics.html">Topics</a>
+    <a href="profile.html">Profile</a>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="dashboard-main">
+
+    <div class="card">
+      <h3>Find a Peer</h3>
+
+      <div class="find-peer">
+        <select id="topicFilter">
+          <option value="">Select Topic</option>
+        </select>
+
+        <select id="modeFilter">
+          <option value="">Mode</option>
+          <option value="online">Online</option>
+          <option value="offline">In-person</option>
+        </select>
+
+        <button id="searchBtn">Find</button>
+      </div>
+
+      <div id="peerResults" style="margin-top: 20px;"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ✅ JS LOADED AS MODULE -->
+<script type="module" src="find-peer.js"></script>
+
+</body>
+</html>
