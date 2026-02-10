@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <script src="https://unpkg.com/lucide@latest"></script>
   <title>PeerSlot Dashboard</title>
+
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="dashboard.css">
 
   <!-- FullCalendar -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
@@ -17,13 +19,12 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
     <h2>PeerSlot</h2>
-    <a class="active">Dashboard</a>
-    <a>Find Peer</a>
-    <a>Availability</a>
-    <a>My Sessions</a>
-    <a>My Peers</a>
-    <a>Rewards</a>
-    <a>Settings</a>
+    <a class="active" href="dashboard.html">Dashboard</a>
+    <a href="#">Find Peer</a>
+    <a href="#">Availability</a>
+    <a href="#">My Sessions</a>
+    <a href="#">My Peers</a>
+    <a href="#">Rewards</a>
   </div>
 
   <!-- MAIN -->
@@ -35,11 +36,19 @@
         <i data-lucide="search" class="search-icon"></i>
         <input placeholder="Search subjects, peers, skills...">
       </div>
+
       <div class="top-icons">
-        <div class="bell">
-          <i data-lucide="bell"></i>
+        <div class="bell"><i data-lucide="bell"></i></div>
+
+        <div class="avatar-wrapper">
+          <div class="avatar" id="avatar">T</div>
+
+          <div class="avatar-dropdown" id="avatarDropdown">
+            <div class="avatar-dropdown-item" data-action="profile"><i data-lucide="user"></i> My Profile</div>
+            <div class="avatar-dropdown-item" data-action="settings"><i data-lucide="settings"></i> Settings</div>
+            <div class="avatar-dropdown-item" data-action="logout"><i data-lucide="log-out"></i> Log out</div>
+          </div>
         </div>
-        <div class="avatar" id="avatar">T</div>
       </div>
     </div>
 
