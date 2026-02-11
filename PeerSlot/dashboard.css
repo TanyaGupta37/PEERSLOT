@@ -168,3 +168,34 @@ body {
   padding: 10px 0;
   border-bottom: 1px solid #e5e7eb;
 }
+
+/* Notification panel */
+.notification-panel {
+  position: absolute;
+  top: 70px;
+  right: 30px;
+  width: 300px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  padding: 12px;
+  z-index: 999;
+}
+
+.notification-panel h4 {
+  margin-bottom: 10px;
+}
+
+.notification-card {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.notification-card:last-child {
+  border-bottom: none;
+}
+
+.hidden {
+  display: none;
+}
