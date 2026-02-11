@@ -270,6 +270,52 @@ function clearFilters() {
   renderSlots(allSlots);
 }
 
+// ===== Avatar Dropdown Logic =====
+document.addEventListener("DOMContentLoaded", () => {
+  const avatar = document.getElementById("avatar");
+  const avatarDropdown = document.getElementById("avatarDropdown");
+
+  if (!avatar || !avatarDropdown) return;
+
+  // Toggle dropdown
+  avatar.addEventListener("click", (e) => {
+    e.stopPropagation();
+    avatarDropdown.classList.toggle("show");
+  });
+
+  // Close when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!avatar.contains(e.target) && !avatarDropdown.contains(e.target)) {
+      avatarDropdown.classList.remove("show");
+    }
+  });
+
+  // Dropdown actions
+  avatarDropdown.addEventListener("click", async (e) => {
+    const item = e.target.closest(".avatar-dropdown-item");
+    if (!item) return;
+
+    avatarDropdown.classList.remove("show");
+
+    const action = item.dataset.action;
+
+    switch (action) {
+      case "profile":
+        window.location.href = "profile.html";
+        break;
+
+      case "settings":
+        window.location.href = "settings.html";
+        break;
+
+      case "logout":
+        await auth.signOut();
+        window.location.href = "login.html";
+        break;
+    }
+  });
+});
+
 // Init
 onAuthStateChanged(auth, async (user) => {
   if (!user) {

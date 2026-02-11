@@ -23,10 +23,9 @@
     <div class="sidebar">
       <h2>PeerSlot</h2>
       <a class="active" href="dashboard.html">Dashboard</a>
-      <a href="find-peer.html">Find Peer</a>
-      <a href="availability.html">Availability</a>
+      <a href="find-peer.html">Offer Help</a>
+      <a href="availability.html">Get Help</a>
       <a href="#sessions">My Sessions</a>
-      <a href="#peers">My Peers</a>
       <a href="#rewards">Rewards</a>
     </div>
 
@@ -83,42 +82,6 @@
         <!-- LEFT COLUMN -->
         <div>
 
-          <!-- FIND A PEER -->
-          <div class="card" id="find-peer">
-            <h3>Find a Peer</h3>
-            <div class="find-peer">
-              <select id="find-subject">
-                <option value="">Subject</option>
-                <option>DSA</option>
-                <option>Python</option>
-                <option>Java</option>
-                <option>C / C++</option>
-                <option>DBMS</option>
-                <option>OS</option>
-                <option>CN</option>
-                <option>Web Development</option>
-                <option>Machine Learning</option>
-                <option>Data Science</option>
-                <option>AI</option>
-                <option>IoT</option>
-                <option>Cloud Computing</option>
-                <option>Cyber Security</option>
-                <option>Blockchain</option>
-                <option>Software Engineering</option>
-                <option>Aptitude</option>
-              </select>
-
-              <select id="find-mode">
-                <option value="">Mode</option>
-                <option>Online</option>
-                <option>In-person</option>
-                <option>Either / No preference</option>
-              </select>
-
-              <button id="find-peer-btn">Find</button>
-            </div>
-          </div>
-
           <!-- CALENDAR -->
           <div class="card">
             <h3>My Calendar</h3>
@@ -145,17 +108,6 @@
         <!-- RIGHT COLUMN -->
         <div>
 
-          <!-- INCOMING MATCH REQUESTS -->
-          <div class="card availability-card" id="incoming-requests">
-            <h3>Incoming Match Requests</h3>
-            <div id="match-requests-list">
-              <div class="loading-state">
-                <div class="spinner"></div>
-                <p>Loading requests...</p>
-              </div>
-            </div>
-          </div>
-
           <!-- AVAILABILITY MANAGEMENT -->
           <div class="card availability-card" id="availability">
             <h3>
@@ -165,11 +117,33 @@
                 <line x1="8" y1="2" x2="8" y2="6" />
                 <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
-              Your Available Slots
+              Get Help
             </h3>
 
             <!-- ADD SLOT FORM -->
             <div class="add-slot-form">
+              <div class="field"> 
+                <label for="slot-subject">Subject</label>
+                <select id="slot-subject">
+                  <option value="">Select Subject</option>
+                  <option>DSA</option>
+                  <option>Python</option>
+                  <option>Java</option>
+                  <option>C / C++</option>
+                  <option>Web Development</option>
+                  <option>Machine Learning</option>
+                  <option>DBMS</option>
+                  <option>OS</option>
+                  <option>CN</option>
+                  <option>Data Science</option>
+                  <option>AI</option>
+                  <option>Cloud Computing</option>
+                  <option>Cyber Security</option>
+                  <option>Blockchain</option>
+                  <option>Software Engineering</option>
+                  <option>Competitive Programming</option>
+                </select>
+              </div>
               <div class="field">
                 <label for="slot-day">Day</label>
                 <select id="slot-day">

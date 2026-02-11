@@ -37,7 +37,22 @@
         <div class="bell">
           <i data-lucide="bell"></i>
         </div>
-        <div class="avatar" id="avatar">T</div>
+
+        <div class="avatar-wrapper">
+          <div class="avatar" id="avatar">T</div>
+
+          <div class="avatar-dropdown" id="avatarDropdown">
+            <div class="avatar-dropdown-item" data-action="profile">
+              <i data-lucide="user"></i> My Profile
+            </div>
+            <div class="avatar-dropdown-item" data-action="settings">
+              <i data-lucide="settings"></i> Settings
+            </div>
+            <div class="avatar-dropdown-item" data-action="logout">
+              <i data-lucide="log-out"></i> Log out
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -121,7 +136,7 @@
 
 <script type="module" src="find-peer.js"></script>
 <script>
-  lucide.createIcons();
+  window.lucide.createIcons();
 </script>
 
 </body>
