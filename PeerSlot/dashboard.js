@@ -11,7 +11,7 @@ import {
   where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-import { SLOT_STATUS, formatTimeDisplay } from "./availability.js";
+import { SLOT_STATUS, formatTimeDisplay } from "./get-help.js";
 
 function getAvatarColor(letter) {
   const colors = [

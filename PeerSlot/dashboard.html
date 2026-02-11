@@ -9,7 +9,7 @@
 
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="dashboard.css">
-  <link rel="stylesheet" href="availability.css">
+  <link rel="stylesheet" href="get-help.css">
 
   <!-- FullCalendar -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
@@ -23,8 +23,8 @@
     <div class="sidebar">
       <h2>PeerSlot</h2>
       <a class="active" href="dashboard.html">Dashboard</a>
-      <a href="find-peer.html">Offer Help</a>
-      <a href="availability.html">Get Help</a>
+      <a href="offer-help.html">Offer Help</a>
+      <a href="get-help.html">Get Help</a>
       <a href="#sessions">My Sessions</a>
       <a href="#rewards">Rewards</a>
     </div>
@@ -33,48 +33,48 @@
     <!-- MAIN -->
     <div class="dashboard-main">
 
-    <!-- TOP BAR -->
-    <div class="topbar">
-      <div class="search-box">
-        <i data-lucide="search" class="search-icon"></i>
-        <input placeholder="Search subjects, peers, skills...">
-      </div>
+      <!-- TOP BAR -->
+      <div class="topbar">
+        <div class="search-box">
+          <i data-lucide="search" class="search-icon"></i>
+          <input placeholder="Search subjects, peers, skills...">
+        </div>
 
-      <div class="top-icons">
-        <div class="bell"><i data-lucide="bell"></i></div>
+        <div class="top-icons">
+          <div class="bell"><i data-lucide="bell"></i></div>
 
-        <div class="avatar-wrapper">
-          <div class="avatar" id="avatar">T</div>
+          <div class="avatar-wrapper">
+            <div class="avatar" id="avatar">T</div>
 
-          <div class="avatar-dropdown" id="avatarDropdown">
-            <div class="avatar-dropdown-item" data-action="profile"><i data-lucide="user"></i> My Profile</div>
-            <div class="avatar-dropdown-item" data-action="settings"><i data-lucide="settings"></i> Settings</div>
-            <div class="avatar-dropdown-item" data-action="logout"><i data-lucide="log-out"></i> Log out</div>
+            <div class="avatar-dropdown" id="avatarDropdown">
+              <div class="avatar-dropdown-item" data-action="profile"><i data-lucide="user"></i> My Profile</div>
+              <div class="avatar-dropdown-item" data-action="settings"><i data-lucide="settings"></i> Settings</div>
+              <div class="avatar-dropdown-item" data-action="logout"><i data-lucide="log-out"></i> Log out</div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- WELCOME -->
-<div class="welcome">
-  <h1 id="welcome">
-    Welcome back, <span id="firstName"></span> <i data-lucide="hand"></i>
-  </h1>
+      <!-- WELCOME -->
+      <div class="welcome">
+        <h1 id="welcome">
+          Welcome back, <span id="firstName"></span> <i data-lucide="hand"></i>
+        </h1>
 
-  <div class="stats">
-    <div class="stat">
-      <i data-lucide="star"></i> 4.8 / 5
-    </div>
+        <div class="stats">
+          <div class="stat">
+            <i data-lucide="star"></i> 4.8 / 5
+          </div>
 
-    <div class="stat">
-      <i data-lucide="users"></i> Peers helped: 12
-    </div>
+          <div class="stat">
+            <i data-lucide="users"></i> Peers helped: 12
+          </div>
 
-    <div class="stat">
-      <i data-lucide="calendar"></i> Sessions booked: 7
-    </div>
-  </div>
-</div>
+          <div class="stat">
+            <i data-lucide="calendar"></i> Sessions booked: 7
+          </div>
+        </div>
+      </div>
 
       <!-- GRID -->
       <div class="dashboard-grid">
@@ -122,7 +122,7 @@
 
             <!-- ADD SLOT FORM -->
             <div class="add-slot-form">
-              <div class="field"> 
+              <div class="field">
                 <label for="slot-subject">Subject</label>
                 <select id="slot-subject">
                   <option value="">Select Subject</option>
@@ -170,7 +170,7 @@
                   <line x1="12" y1="5" x2="12" y2="19" />
                   <line x1="5" y1="12" x2="19" y2="12" />
                 </svg>
-                Add Slot
+                Add Request
               </button>
             </div>
 
@@ -203,8 +203,8 @@
 
   <!-- Availability Module -->
   <script type="module">
-    import { initAvailabilityUI } from "./availability-ui.js";
-    import { initPeerAvailabilityViewer } from "./peer-availability.js";
+    import { initAvailabilityUI } from "./get-help-ui.js";
+    import { initPeerAvailabilityViewer } from "./peer-get-help.js";
 
     // Initialize availability UI
     initAvailabilityUI();

@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <title>PeerSlot - Availability</title>
+    <title>PeerSlot - Get Help</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="availability.css">
+    <link rel="stylesheet" href="get-help.css">
 
     <!-- FullCalendar -->
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
@@ -185,9 +185,9 @@
                     <line x1="8" y1="2" x2="8" y2="6" />
                     <line x1="3" y1="10" x2="21" y2="10" />
                 </svg>
-                Manage Your Availability
+                Get Help
             </h1>
-            <p>Set your available time slots and they'll appear on your calendar</p>
+            <p>Set dates where you need help and they'll appear on your calendar</p>
         </div>
 
         <div class="availability-grid">
@@ -200,10 +200,17 @@
 
             <!-- ADD SLOT FORM & LIST -->
             <div class="slots-card">
-                <h3>Add Availability Slot</h3>
+                <h3>Add Help Request</h3>
 
                 <!-- ADD SLOT FORM -->
                 <div class="add-slot-form">
+                    <div class="field">
+                        <label for="slot-subject">Subject</label>
+                        <select id="slot-subject">
+                            <option value="">Select Subject</option>
+                        </select>
+                    </div>
+
                     <div class="field">
                         <label for="slot-date">Date</label>
                         <input type="date" id="slot-date" />
@@ -258,6 +265,13 @@
             <h3>Edit Availability Slot</h3>
 
             <div class="field">
+                <label for="edit-subject">Subject</label>
+                <select id="edit-subject">
+                    <option value="">Select Subject</option>
+                </select>
+            </div>
+
+            <div class="field">
                 <label for="edit-date">Date</label>
                 <input type="date" id="edit-date" />
             </div>
@@ -309,6 +323,12 @@
             "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
             "18:00", "18:30", "19:00", "19:30", "20:00", "20:30",
             "21:00", "21:30", "22:00", "22:30", "23:00"
+        ];
+
+        const SUBJECTS = [
+            "DSA", "Python", "Java", "C/C++", "DBMS", "OS", "CN",
+            "Web Dev", "ML", "DL", "Data Science", "AI", "IoT",
+            "Cloud", "Cyber Security", "Blockchain", "SE", "Aptitude"
         ];
 
         let currentUser = null;
@@ -374,9 +394,9 @@
         }
 
         // AC5: Validate availability slot inputs
-        function validateSlot(date, startTime, endTime, excludeSlotId = null) {
+        function validateSlot(subject, date, startTime, endTime, excludeSlotId = null) {
             // TC-06: Missing required fields
-            if (!date || !startTime || !endTime) {
+            if (!subject || !date || !startTime || !endTime) {
                 return { valid: false, error: "Please fill all fields" };
             }
 
@@ -508,7 +528,8 @@
                     extendedProps: {
                         slotId: slot.id,
                         status: slot.status,
-                        time: `${formatTimeDisplay(slot.startTime)} - ${formatTimeDisplay(slot.endTime)}`
+                        time: `${formatTimeDisplay(slot.startTime)} - ${formatTimeDisplay(slot.endTime)}`,
+                        subject: slot.subject || "General"
                     }
                 });
             });
@@ -516,9 +537,11 @@
 
         // Populate selects
         const dateInput = document.getElementById("slot-date");
+        const subjectSelect = document.getElementById("slot-subject");
         const startTimeSelect = document.getElementById("slot-start-time");
         const endTimeSelect = document.getElementById("slot-end-time");
         const editDateInput = document.getElementById("edit-date");
+        const editSubjectSelect = document.getElementById("edit-subject");
         const editStartTimeSelect = document.getElementById("edit-start-time");
         const editEndTimeSelect = document.getElementById("edit-end-time");
 
@@ -526,6 +549,13 @@
         dateInput.min = today;
         dateInput.value = today;
         editDateInput.min = today;
+
+        const subjectOptions = SUBJECTS.map(sub =>
+            `<option value="${sub}">${sub}</option>`
+        ).join("");
+
+        subjectSelect.innerHTML = '<option value="">Select Subject</option>' + subjectOptions;
+        editSubjectSelect.innerHTML = '<option value="">Select Subject</option>' + subjectOptions;
 
         const timeOptions = TIME_SLOTS.map(time =>
             `<option value="${time}">${formatTimeDisplay(time)}</option>`
@@ -563,8 +593,8 @@
             if (userSlots.length === 0) {
                 slotsList.innerHTML = `
         <div class="empty-state">
-          <p>No availability slots added yet</p>
-          <p class="hint">Add your available time slots and they'll appear on the calendar</p>
+          <p>No help requests added yet</p>
+          <p class="hint">Add times you need help and they'll appear on your calendar</p>
         </div>
       `;
                 slotsCount.innerHTML = "";
@@ -606,6 +636,7 @@
                     html += `
           <div class="slot ${statusClass}" data-slot-id="${slot.id}">
             <div class="slot-time">
+              <span class="subject-badge" style="background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin-right: 8px;">${slot.subject || "General"}</span>
               <span class="time-range">${formatTimeDisplay(slot.startTime)} – ${formatTimeDisplay(slot.endTime)}</span>
               ${statusBadge}
             </div>
@@ -638,10 +669,11 @@
         // TC-02: Add a valid availability slot
         document.getElementById("add-slot-btn").addEventListener("click", async () => {
             const date = dateInput.value;
+            const subject = subjectSelect.value;
             const startTime = startTimeSelect.value;
             const endTime = endTimeSelect.value;
 
-            const validation = validateSlot(date, startTime, endTime);
+            const validation = validateSlot(subject, date, startTime, endTime);
             if (!validation.valid) {
                 showToast(validation.error, "error");
                 return;
@@ -651,6 +683,7 @@
                 const slotsRef = collection(db, "availabilitySlots");
                 const newSlot = {
                     userId: currentUser.uid,
+                    subject,
                     date,
                     startTime,
                     endTime,
@@ -662,6 +695,7 @@
                 await addDoc(slotsRef, newSlot);
 
                 dateInput.value = today;
+                subjectSelect.value = "";
                 startTimeSelect.value = "";
                 endTimeSelect.value = "";
 
@@ -680,6 +714,7 @@
 
             editingSlotId = id;
             editDateInput.value = slot.date;
+            editSubjectSelect.value = slot.subject || "";
             editStartTimeSelect.value = slot.startTime;
             editEndTimeSelect.value = slot.endTime;
 
@@ -694,10 +729,11 @@
 
         window.saveEdit = async () => {
             const date = editDateInput.value;
+            const subject = editSubjectSelect.value;
             const startTime = editStartTimeSelect.value;
             const endTime = editEndTimeSelect.value;
 
-            const validation = validateSlot(date, startTime, endTime, editingSlotId);
+            const validation = validateSlot(subject, date, startTime, endTime, editingSlotId);
             if (!validation.valid) {
                 document.getElementById("edit-error").textContent = validation.error;
                 document.getElementById("edit-error").style.color = "#dc2626";
@@ -709,6 +745,7 @@
                 const slotRef = doc(db, "availabilitySlots", editingSlotId);
                 await updateDoc(slotRef, {
                     date,
+                    subject,
                     startTime,
                     endTime,
                     updatedAt: Timestamp.now()

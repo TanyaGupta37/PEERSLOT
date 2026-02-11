@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <title>Offer Help – PeerSlot</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="offer-help.css">
+  <link rel="stylesheet" href="get-help.css">
+</head>
+
+<body>
+
+  <div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <h2>PeerSlot</h2>
+      <a href="dashboard.html">Dashboard</a>
+      <a class="active" href="offer-help.html">Offer Help</a>
+      <a href="get-help.html">Get Help</a>
+      <a>My Sessions</a>
+      <a>My Peers</a>
+      <a>Rewards</a>
+      <a>Settings</a>
+    </div>
+
+    <!-- MAIN -->
+    <div class="dashboard-main">
+
+      <!-- TOP BAR -->
+      <div class="topbar">
+        <div class="search-box">
+          <i data-lucide="search" class="search-icon"></i>
+          <input placeholder="Search subjects, peers, skills...">
+        </div>
+        <div class="top-icons">
+          <div class="bell">
+            <i data-lucide="bell"></i>
+          </div>
+
+          <div class="avatar-wrapper">
+            <div class="avatar" id="avatar">T</div>
+
+            <div class="avatar-dropdown" id="avatarDropdown">
+              <div class="avatar-dropdown-item" data-action="profile">
+                <i data-lucide="user"></i> My Profile
+              </div>
+              <div class="avatar-dropdown-item" data-action="settings">
+                <i data-lucide="settings"></i> Settings
+              </div>
+              <div class="avatar-dropdown-item" data-action="logout">
+                <i data-lucide="log-out"></i> Log out
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE HEADING -->
+      <div class="welcome">
+        <h1><i data-lucide="users"></i> Offer Help</h1>
+        <p class="page-subtitle">Browse available requests from peers and filter by subject or day.</p>
+      </div>
+
+      <!-- CONTENT GRID: slots left, filters right -->
+      <div class="find-peer-grid">
+
+        <!-- LEFT: SLOTS LIST -->
+        <div class="slots-area">
+          <div id="slots-container">
+            <div class="loading-state">Loading available requests...</div>
+          </div>
+
+          <!-- EMPTY STATE (hidden by default) -->
+          <div id="empty-state" class="empty-state" style="display:none;">
+            <i data-lucide="search-x"></i>
+            <h3>No matching requests found</h3>
+            <p>Try adjusting your filters or check back later.</p>
+          </div>
+        </div>
+
+        <!-- RIGHT: FILTER SECTION -->
+        <div class="filter-panel">
+          <div class="card">
+            <h3><i data-lucide="filter"></i> Filters</h3>
+
+            <div class="filter-group">
+              <label>Subject</label>
+              <select id="filter-subject">
+                <option value="">All Subjects</option>
+                <option value="DSA">DSA</option>
+                <option value="Python">Python</option>
+                <option value="Java">Java</option>
+                <option value="C/C++">C / C++</option>
+                <option value="DBMS">DBMS</option>
+                <option value="OS">OS</option>
+                <option value="CN">CN</option>
+                <option value="Web Dev">Web Development</option>
+                <option value="ML">Machine Learning</option>
+                <option value="DL">Deep Learning</option>
+                <option value="Data Science">Data Science</option>
+                <option value="AI">AI</option>
+                <option value="IoT">IoT</option>
+                <option value="Cloud">Cloud Computing</option>
+                <option value="Cyber Security">Cyber Security</option>
+                <option value="Blockchain">Blockchain</option>
+                <option value="SE">Software Engineering</option>
+                <option value="Aptitude">Aptitude</option>
+              </select>
+            </div>
+
+            <div class="filter-group">
+              <label>Day</label>
+              <select id="filter-day">
+                <option value="">All Days</option>
+                <option value="Mon">Monday</option>
+                <option value="Tue">Tuesday</option>
+                <option value="Wed">Wednesday</option>
+                <option value="Thu">Thursday</option>
+                <option value="Fri">Friday</option>
+                <option value="Sat">Saturday</option>
+                <option value="Sun">Sunday</option>
+              </select>
+            </div>
+
+            <button id="apply-filters" class="filter-btn">Apply Filters</button>
+            <button id="clear-filters" class="filter-btn clear">Clear Filters</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script type="module" src="offer-help.js"></script>
+  <script>
+    window.lucide.createIcons();
+  </script>
+
+</body>
+
+</html>

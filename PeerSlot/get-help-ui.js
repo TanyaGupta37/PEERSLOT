@@ -19,7 +19,7 @@ import {
     updateSlot,
     deleteSlot,
     getSlotCount
-} from "./availability.js";
+} from "./get-help.js";
 
 // ============================================
 // STATE
@@ -160,7 +160,7 @@ function createModals() {
     const editModalHTML = `
     <div id="edit-slot-modal" class="modal-overlay" style="display: none;">
       <div class="modal-card">
-        <h3>Edit Availability Slot</h3>
+        <h3>Edit Help Request</h3>
         <div class="modal-body">
           <div class="field">
             <label>Day</label>
@@ -190,7 +190,7 @@ function createModals() {
       <div class="modal-card">
         <h3>Delete Slot</h3>
         <div class="modal-body">
-          <p>Are you sure you want to delete this availability slot?</p>
+          <p>Are you sure you want to delete this help request?</p>
           <p id="delete-slot-info" class="slot-info-text"></p>
         </div>
         <div class="modal-actions">
@@ -329,8 +329,8 @@ function renderSlots() {
     if (currentSlots.length === 0) {
         elements.slotsList.innerHTML = `
       <div class="empty-state">
-        <p>No availability slots added yet</p>
-        <p class="hint">Add your available time slots so peers can book sessions with you</p>
+        <p>No help requests added yet</p>
+        <p class="hint">Add times you need help so peers can offer assistance</p>
       </div>
     `;
         return;

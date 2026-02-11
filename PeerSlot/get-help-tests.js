@@ -19,7 +19,7 @@ import {
     timesOverlap,
     validateSlot,
     validateSlotUpdate
-} from "./availability.js";
+} from "./get-help.js";
 
 // ============================================
 // TEST UTILITIES

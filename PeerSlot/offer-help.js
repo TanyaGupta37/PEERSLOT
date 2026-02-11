@@ -10,7 +10,7 @@ import {
   serverTimestamp,
   where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { formatTimeDisplay, getShortDay, SLOT_STATUS } from "./availability.js";
+import { formatTimeDisplay, getShortDay, SLOT_STATUS } from "./get-help.js";
 
 const avatarColors = [
   "#2563eb", "#16a34a", "#db2777",
@@ -56,11 +56,23 @@ async function fetchSlots() {
 
   return slotDocs.map((slot) => {
     const user = userById[slot.userId] || { name: "Unknown", subjects: [] };
+
+    // Use slot subject if available, otherwise fallback to user subjects
+    const subjects = slot.subject ? [slot.subject] : (user.subjects || []);
+
+    // Handle day from date if day field is missing
+    let dayDisplay = slot.day || "";
+    if (!dayDisplay && slot.date) {
+      // Create date object (append time to avoid timezone issues with pure date string)
+      const d = new Date(slot.date + "T00:00:00");
+      dayDisplay = d.toLocaleDateString('en-US', { weekday: 'long' });
+    }
+
     return {
       uid: slot.userId,
       name: user.name,
-      subjects: user.subjects,
-      day: slot.day || "",
+      subjects: subjects,
+      day: dayDisplay || "",
       startTime: slot.startTime || "",
       endTime: slot.endTime || "",
       duration: slot.duration,

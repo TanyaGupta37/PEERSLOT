@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadAvailabilityToCalendar(calendar) {
   try {
     // Import availability functions dynamically
-    const { fetchOwnSlotsSorted, SLOT_STATUS, formatTimeDisplay, DAYS } = await import("./availability.js");
+    const { fetchOwnSlotsSorted, SLOT_STATUS, formatTimeDisplay, DAYS } = await import("./get-help.js");
     const { auth } = await import("./firebase.js");
     const { onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
 

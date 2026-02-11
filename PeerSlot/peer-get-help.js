@@ -13,7 +13,7 @@ import {
     formatTimeDisplay,
     getShortDay,
     fetchPeerAvailability
-} from "./availability.js";
+} from "./get-help.js";
 
 // ============================================
 // STATE
