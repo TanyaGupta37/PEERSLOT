@@ -518,3 +518,109 @@ body {
   vertical-align: middle;
   color: #2563eb;
 }
+
+/* ================= CHAT CONTAINER ================= */
+
+.chat-container {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+/* ================= LEFT SIDE (CHAT LIST) ================= */
+
+#chat-list {
+  flex: 0 0 180px;
+  height: 350px;
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+/* chat user item */
+#chat-list div {
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  background: #f1f5f9;
+  transition: 0.2s;
+}
+
+#chat-list div:hover {
+  background: #e2e8f0;
+}
+
+/* ================= RIGHT SIDE (CHAT BOX) ================= */
+
+.chat-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* messages area */
+#messages {
+  height: 300px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+/* message bubbles */
+#messages p {
+  padding: 6px 10px;
+  border-radius: 10px;
+  margin: 5px 0;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+/* ================= INPUT AREA ================= */
+
+.chat-input {
+  display: flex;
+  margin-top: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.chat-input button {
+  margin-left: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  background: #2563eb;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.chat-input button:hover {
+  background: #1d4ed8;
+}
+
+/* smooth scroll */
+#messages {
+  scroll-behavior: smooth;
+}
+
+/* nicer scrollbar */
+#chat-list::-webkit-scrollbar,
+#messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+#chat-list::-webkit-scrollbar-thumb,
+#messages::-webkit-scrollbar-thumb {
+  background: #cbd5f5;
+  border-radius: 10px;
+}

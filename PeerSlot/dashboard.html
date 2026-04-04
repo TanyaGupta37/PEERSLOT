@@ -9,7 +9,6 @@
 
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="dashboard.css">
-  <link rel="stylesheet" href="get-help.css">
 
   <!-- FullCalendar -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
@@ -108,86 +107,24 @@
         <!-- RIGHT COLUMN -->
         <div>
 
-          <!-- AVAILABILITY MANAGEMENT -->
-          <div class="card availability-card" id="availability">
-            <h3>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-              Get Help
-            </h3>
+          <!-- CHAT -->
+          <div class="card">
+            <h3>Chat</h3>
 
-            <!-- ADD SLOT FORM -->
-            <div class="add-slot-form">
-              <div class="field">
-                <label for="slot-subject">Subject</label>
-                <select id="slot-subject">
-                  <option value="">Select Subject</option>
-                  <option>DSA</option>
-                  <option>Python</option>
-                  <option>Java</option>
-                  <option>C / C++</option>
-                  <option>Web Development</option>
-                  <option>Machine Learning</option>
-                  <option>DBMS</option>
-                  <option>OS</option>
-                  <option>CN</option>
-                  <option>Data Science</option>
-                  <option>AI</option>
-                  <option>Cloud Computing</option>
-                  <option>Cyber Security</option>
-                  <option>Blockchain</option>
-                  <option>Software Engineering</option>
-                  <option>Competitive Programming</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="slot-day">Day</label>
-                <select id="slot-day">
-                  <option value="">Select Day</option>
-                </select>
+            <div class="chat-container">
+
+              <div id="chat-list"></div>
+
+              <div class="chat-box">
+                <div id="messages"></div>
+
+                <div class="chat-input">
+                  <input id="chatInput" placeholder="Type a message...">
+                  <button onclick="sendMessage()">Send</button>
+                </div>
               </div>
 
-              <div class="field">
-                <label for="slot-start-time">Start Time</label>
-                <select id="slot-start-time">
-                  <option value="">Select Time</option>
-                </select>
-              </div>
-
-              <div class="field">
-                <label for="slot-end-time">End Time</label>
-                <select id="slot-end-time">
-                  <option value="">Select Time</option>
-                </select>
-              </div>
-
-              <button id="add-slot-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <line x1="12" y1="5" x2="12" y2="19" />
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                </svg>
-                Add Request
-              </button>
             </div>
-
-            <!-- ERROR MESSAGE -->
-            <div id="slot-error"></div>
-
-            <!-- SLOTS COUNT -->
-            <div id="slots-count"></div>
-
-            <!-- SLOTS LIST -->
-            <div id="slots-list">
-              <div class="loading-state">
-                <div class="spinner"></div>
-                <p>Loading slots...</p>
-              </div>
-            </div>
-
           </div>
 
         </div>
@@ -200,16 +137,6 @@
 
   <!-- Dashboard logic -->
   <script type="module" src="dashboard.js"></script>
-
-  <!-- Availability Module -->
-  <script type="module">
-    import { initAvailabilityUI } from "./get-help-ui.js";
-    import { initPeerAvailabilityViewer } from "./peer-get-help.js";
-
-    // Initialize availability UI
-    initAvailabilityUI();
-    initPeerAvailabilityViewer();
-  </script>
 
   <!-- Calendar UI -->
   <script src="dashboard-calendar.js"></script>
