@@ -166,6 +166,47 @@
 </head>
 
 <body>
+    <div class="dashboard-layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <h2>PeerSlot</h2>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="offer-help.html">Offer Help</a>
+    <a class="active" href="get-help.html">Get Help</a>
+    <a>My Sessions</a>
+    <a>Rewards</a>
+  </div>
+
+  <!-- MAIN -->
+  <div class="dashboard-main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+      <div class="search-box">
+        <i data-lucide="search" class="search-icon"></i>
+        <input placeholder="Search subjects, peers, skills...">
+      </div>
+      <div class="top-icons">
+        <div class="bell">
+          <i data-lucide="bell"></i>
+        </div>
+        <div class="avatar-wrapper">
+          <div class="avatar" id="avatar">T</div>
+          <div class="avatar-dropdown" id="avatarDropdown">
+            <div class="avatar-dropdown-item" data-action="profile">
+              <i data-lucide="user"></i> My Profile
+            </div>
+            <div class="avatar-dropdown-item" data-action="settings">
+              <i data-lucide="settings"></i> Settings
+            </div>
+            <div class="avatar-dropdown-item" data-action="logout">
+              <i data-lucide="log-out"></i> Log out
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="availability-page">
 
@@ -457,6 +498,34 @@
             document.body.appendChild(container);
             return container;
         }
+
+        // Avatar dropdown
+        const avatarEl = document.getElementById("avatar");
+        const avatarDropdown = document.getElementById("avatarDropdown");
+
+        avatarEl.addEventListener("click", (e) => {
+          e.stopPropagation();
+          avatarDropdown.classList.toggle("show");
+        });
+
+        document.addEventListener("click", (e) => {
+          if (!avatarEl.contains(e.target) && !avatarDropdown.contains(e.target)) {
+            avatarDropdown.classList.remove("show");
+          }
+        });
+
+        avatarDropdown.addEventListener("click", async (e) => {
+          const item = e.target.closest(".avatar-dropdown-item");
+          if (!item) return;
+          avatarDropdown.classList.remove("show");
+          const action = item.dataset.action;
+          if (action === "profile") window.location.href = "profile.html";
+          else if (action === "settings") window.location.href = "settings.html";
+          else if (action === "logout") {
+            await auth.signOut();
+            window.location.href = "login.html";
+          }
+        });
 
         // Initialize calendar
         function initCalendar() {
