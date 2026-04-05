@@ -237,3 +237,29 @@
   color: #64748b;
   font-size: 15px;
 }
+
+.avatar-dropdown {
+  display: none;
+  position: absolute;
+  top: 52px;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  padding: 6px;
+  min-width: 160px;
+  z-index: 1000;
+}
+
+.avatar-dropdown.show {
+  display: block;
+}
+
+.avatar-wrapper {
+  position: relative;
+}
+
+.avatar,
+.avatar-dropdown-item {
+  cursor: pointer;
+}
