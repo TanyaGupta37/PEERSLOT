@@ -7,6 +7,7 @@ import {
     onSnapshot,
     orderBy,
     doc,
+    getDoc,
     updateDoc,
     serverTimestamp,
     getDocs
@@ -106,7 +107,6 @@ function renderNotifications(docs) {
     list.innerHTML = docs.map(docSnap => {
         const data = docSnap.data();
         const id = docSnap.id;
-        
         // Safety check for server timestamps that are null in local cache
         let time = 'Recently';
         try {
@@ -117,7 +117,7 @@ function renderNotifications(docs) {
             console.warn("Error formatting time for notification:", e);
         }
 
-        const isMatchRequest = data.type === 'match_request' && !data.read;
+        const isMatchRequest = data.type === 'match_request' && !data.read && data.data?.matchRequestId;
         
         return `
             <div class="notification-item ${data.read ? '' : 'unread'}" data-id="${id}">
