@@ -106,7 +106,17 @@ function renderNotifications(docs) {
     list.innerHTML = docs.map(docSnap => {
         const data = docSnap.data();
         const id = docSnap.id;
-        const time = data.createdAt ? formatTimeAgo(data.createdAt.toDate()) : 'Recently';
+        
+        // Safety check for server timestamps that are null in local cache
+        let time = 'Recently';
+        try {
+            if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+                time = formatTimeAgo(data.createdAt.toDate());
+            }
+        } catch (e) {
+            console.warn("Error formatting time for notification:", e);
+        }
+
         const isMatchRequest = data.type === 'match_request' && !data.read;
         
         return `
