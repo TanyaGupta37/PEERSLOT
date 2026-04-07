@@ -11,6 +11,7 @@ import {
   where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { formatTimeDisplay, getShortDay, SLOT_STATUS } from "./get-help.js";
+import { setupNotifications } from "./notifications.js";
 
 const avatarColors = [
   "#2563eb", "#16a34a", "#db2777",
@@ -336,6 +337,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   currentUid = user.uid;
+  setupNotifications();
 
   // Set avatar
   const avatarEl = document.getElementById("avatar");

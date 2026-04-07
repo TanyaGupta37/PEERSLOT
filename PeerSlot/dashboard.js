@@ -13,6 +13,7 @@ import {
   orderBy,
   addDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { setupNotifications } from "./notifications.js";
 
 function getAvatarColor(letter) {
   const colors = [
@@ -145,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
     avatar.innerText = letter;
     avatar.style.background = getAvatarColor(letter);
 
+    setupNotifications();
     loadChatList(user.uid);
   });
 

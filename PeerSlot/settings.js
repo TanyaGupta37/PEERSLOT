@@ -1,6 +1,7 @@
 import { auth, db } from "./firebase.js";
 import { onAuthStateChanged, signOut, sendPasswordResetEmail, deleteUser } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { doc, getDoc, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { setupNotifications } from "./notifications.js";
 
 // State
 let currentUser = null;
@@ -55,6 +56,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   currentUser = user;
+  setupNotifications();
 
   const snap = await getDoc(doc(db, "users", user.uid));
   if (snap.exists()) {
