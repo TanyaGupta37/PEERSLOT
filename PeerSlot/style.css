@@ -515,6 +515,42 @@ body {
   color: #94a3b8;
 }
 
+.notification-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.notification-actions button {
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.btn-accept {
+  background: #2563eb;
+  color: white;
+}
+
+.btn-accept:hover {
+  background: #1d4ed8;
+}
+
+.btn-decline {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.btn-decline:hover {
+  background: #e2e8f0;
+  color: #475569;
+}
+
 .notification-empty {
   padding: 40px 20px;
   text-align: center;
@@ -746,12 +782,26 @@ body {
 }
 
 /* message bubbles */
-#messages p {
-  padding: 6px 10px;
-  border-radius: 10px;
-  margin: 5px 0;
-  max-width: 70%;
+.chat-message {
+  padding: 10px 14px;
+  border-radius: 14px;
+  margin: 6px 0;
+  max-width: 80%;
   word-wrap: break-word;
+}
+
+.chat-message.own {
+  background: #2563eb;
+  color: white;
+  align-self: flex-end;
+}
+
+.system-message {
+  text-align: center;
+  margin: 16px 0;
+  color: #64748b;
+  font-size: 13px;
+  width: 100%;
 }
 
 /* ================= INPUT AREA ================= */

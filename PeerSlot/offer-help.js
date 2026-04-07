@@ -10,8 +10,11 @@ import {
   serverTimestamp,
   where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { setupNotifications, sendMatchRequestNotification } from "./notifications.js";
+
+// Utility functions copied locally to avoid get-help.js dependency issues if needed, 
+// though we keep them here for now.
 import { formatTimeDisplay, getShortDay, SLOT_STATUS } from "./get-help.js";
-import { setupNotifications } from "./notifications.js";
 
 const avatarColors = [
   "#2563eb", "#16a34a", "#db2777",
@@ -245,6 +248,22 @@ async function handleMatchRequest() {
       updatedAt: serverTimestamp()
     });
 
+    // Send real-time notification to the slot owner
+    try {
+      const userSnap = await getDoc(doc(db, "users", currentUid));
+      const senderName = userSnap.exists() ? (userSnap.data().name || "A peer") : "A peer";
+      const subject = selectedSlot.subjects && selectedSlot.subjects.length > 0 ? selectedSlot.subjects[0] : "General Help";
+      
+      await sendMatchRequestNotification(
+        selectedPeer.uid, 
+        senderName, 
+        subject, 
+        docRef.id
+      );
+    } catch (notiErr) {
+      console.error("Match notification failed:", notiErr);
+    }
+
     closeMatchRequestModal();
     alert("Match request sent!");
   } catch (err) {
@@ -283,18 +302,65 @@ function clearFilters() {
   renderSlots(allSlots);
 }
 
-// ===== Avatar Dropdown Logic =====
-document.addEventListener("DOMContentLoaded", () => {
+// Init
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  currentUid = user.uid;
+  
+  // Setup notifications and other UI systems
+  setupNotifications();
+  setupAvatarDropdown();
+
+  // Set avatar info
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    if (snap.exists()) {
+      const data = snap.data();
+      const firstName = (data.name || "Peer").split(" ")[0];
+      const letter = firstName[0].toUpperCase();
+      const avatarEl = document.getElementById("avatar");
+      if (avatarEl) {
+        avatarEl.innerText = letter;
+        avatarEl.style.background = getAvatarColor(letter);
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching user data:", err);
+  }
+
+  // Fetch and render slots
+  try {
+    allSlots = await fetchSlots();
+    renderSlots(allSlots);
+  } catch (err) {
+    console.error("Error fetching slots:", err);
+    const container = document.getElementById("slots-container");
+    if (container) container.innerHTML = '<div class="error-state">Failed to load requests. Please try again later.</div>';
+  }
+
+  // Bind filter buttons
+  const applyBtn = document.getElementById("apply-filters");
+  const clearBtn = document.getElementById("clear-filters");
+  if (applyBtn) applyBtn.addEventListener("click", applyFilters);
+  if (clearBtn) clearBtn.addEventListener("click", clearFilters);
+});
+
+// Refactored Avatar Dropdown Logic
+function setupAvatarDropdown() {
   const avatar = document.getElementById("avatar");
   const avatarDropdown = document.getElementById("avatarDropdown");
 
   if (!avatar || !avatarDropdown) return;
 
   // Toggle dropdown
-  avatar.addEventListener("click", (e) => {
+  avatar.onclick = (e) => {
     e.stopPropagation();
     avatarDropdown.classList.toggle("show");
-  });
+  };
 
   // Close when clicking outside
   document.addEventListener("click", (e) => {
@@ -304,62 +370,21 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Dropdown actions
-  avatarDropdown.addEventListener("click", async (e) => {
+  avatarDropdown.onclick = async (e) => {
     const item = e.target.closest(".avatar-dropdown-item");
     if (!item) return;
 
     avatarDropdown.classList.remove("show");
-
     const action = item.dataset.action;
 
-    switch (action) {
-      case "profile":
-        window.location.href = "profile.html";
-        break;
-
-      case "settings":
-        window.location.href = "settings.html";
-        break;
-
-      case "logout":
-        await auth.signOut();
-        window.location.href = "login.html";
-        break;
+    if (action === "profile") window.location.href = "profile.html";
+    else if (action === "settings") window.location.href = "settings.html";
+    else if (action === "logout") {
+      await auth.signOut();
+      window.location.href = "login.html";
     }
-  });
-});
-
-// Init
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  currentUid = user.uid;
-  setupNotifications();
-
-  // Set avatar
-  const avatarEl = document.getElementById("avatar");
-  if (avatarEl) {
-    const snap = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js")
-      .then(({ doc, getDoc }) => getDoc(doc(db, "users", user.uid)));
-    if (snap.exists()) {
-      const firstName = snap.data().name.split(" ")[0];
-      const letter = firstName[0].toUpperCase();
-      avatarEl.innerText = letter;
-      avatarEl.style.background = getAvatarColor(letter);
-    }
-  }
-
-  // Fetch and render slots
-  allSlots = await fetchSlots();
-  renderSlots(allSlots);
-
-  // Bind filter buttons
-  document.getElementById("apply-filters").addEventListener("click", applyFilters);
-  document.getElementById("clear-filters").addEventListener("click", clearFilters);
-});
+  };
+}
 
 window.openMatchRequestModal = function (slotId) {
   openMatchRequestModalForSlot(slotId);

@@ -42,71 +42,114 @@ function getAvatarInitial(name) {
 let currentChatUser = null;
 
 function loadChatList(userId) {
-  const q = query(collection(db, "messages"));
-  onSnapshot(q, (snapshot) => {
+  // Listen for all messages where current user is a participant
+  const q = query(
+    collection(db, "messages"),
+    where("participants", "array-contains", userId),
+    orderBy("createdAt", "desc")
+  );
+
+  onSnapshot(q, async (snapshot) => {
     const chatList = document.getElementById("chat-list");
     if (!chatList) return;
+    
     chatList.innerHTML = "";
-    const users = new Set();
-    snapshot.forEach(docSnap => {
+    
+    // Use a Map to keep track of unique chat partners and their latest message
+    const partners = new Map();
+    
+    for (const docSnap of snapshot.docs) {
       const msg = docSnap.data();
-      if (msg.participants) {
-        msg.participants.forEach(p => {
-          if (p !== userId) users.add(p);
-        });
+      const partnerId = msg.participants.find(p => p !== userId);
+      if (partnerId && !partners.has(partnerId)) {
+        partners.set(partnerId, msg);
       }
-    });
+    }
 
-    users.forEach(user => {
+    if (partners.size === 0) {
+      chatList.innerHTML = '<div style="text-align:center;margin-top:20px;opacity:0.6;">No chats yet 😴</div>';
+      return;
+    }
+
+    // Render each partner
+    for (const [partnerId, lastMsg] of partners) {
+      const userSnap = await getDoc(doc(db, "users", partnerId));
+      const userData = userSnap.exists() ? userSnap.data() : { name: "Unknown" };
+      const name = userData.name || "Unknown";
+      
       const div = document.createElement("div");
-      div.innerText = user;
-      div.style.padding = "10px";
-      div.style.borderRadius = "10px";
-      div.style.marginBottom = "6px";
+      div.className = "chat-partner-item";
+      div.innerHTML = `
+        <div style="font-weight: 500; font-size: 14px;">${name}</div>
+        <div style="font-size: 11px; opacity: 0.7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+          ${lastMsg.text}
+        </div>
+      `;
+      div.style.padding = "12px";
+      div.style.borderRadius = "12px";
+      div.style.marginBottom = "8px";
       div.style.cursor = "pointer";
-      div.style.background = "#f1f5f9";
+      div.style.background = currentChatUser === partnerId ? "#e2e8f0" : "#f1f5f9";
+      div.style.transition = "background 0.2s";
+      
       div.onclick = () => {
-        currentChatUser = user;
-        openChat(user);
+        currentChatUser = partnerId;
+        // Re-render list to show active state
+        loadChatList(userId); 
+        openChat(partnerId, userId);
       };
       chatList.appendChild(div);
-    });
-
-    if (users.size === 0) {
-      const empty = document.createElement("div");
-      empty.innerText = "No chats yet 😴";
-      empty.style.textAlign = "center";
-      empty.style.marginTop = "20px";
-      empty.style.opacity = "0.6";
-      chatList.appendChild(empty);
     }
   });
 }
 
-function openChat(userName) {
-  const q = query(collection(db, "messages"), orderBy("createdAt"));
+function openChat(partnerId, userId) {
+  const messagesDiv = document.getElementById("messages");
+  if (!messagesDiv) return;
+
+  const q = query(
+    collection(db, "messages"), 
+    where("participants", "array-contains", userId),
+    orderBy("createdAt", "asc")
+  );
+
   onSnapshot(q, (snapshot) => {
-    const messagesDiv = document.getElementById("messages");
     messagesDiv.innerHTML = "";
-    snapshot.forEach(docSnap => {
-      const msg = docSnap.data();
-      if (msg.participants.includes(userName)) {
-        const p = document.createElement("p");
-        p.innerText = msg.text;
-        messagesDiv.appendChild(p);
+    
+    const relevantMsgs = snapshot.docs
+      .map(d => d.data())
+      .filter(m => m.participants.includes(partnerId));
+
+    relevantMsgs.forEach(msg => {
+      const div = document.createElement("div");
+      
+      if (msg.type === "system_intro") {
+        div.className = "system-message";
+        div.innerText = msg.text;
+      } else {
+        div.className = `chat-message ${msg.senderId === userId ? 'own' : ''}`;
+        div.innerText = msg.text;
       }
+      
+      messagesDiv.appendChild(div);
     });
+    
+    // Auto-scroll to bottom
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
   });
 }
 
 window.sendMessage = async () => {
   const input = document.getElementById("chatInput");
   const text = input.value.trim();
-  if (!text || !currentChatUser) return;
+  const user = auth.currentUser;
+  if (!text || !currentChatUser || !user) return;
+
   await addDoc(collection(db, "messages"), {
     text,
-    participants: [currentChatUser],
-    createdAt: new Date()
+    senderId: user.uid,
+    participants: [user.uid, currentChatUser],
+    createdAt: serverTimestamp()
   });
   input.value = "";
 };

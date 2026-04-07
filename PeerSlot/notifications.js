@@ -107,6 +107,7 @@ function renderNotifications(docs) {
         const data = docSnap.data();
         const id = docSnap.id;
         const time = data.createdAt ? formatTimeAgo(data.createdAt.toDate()) : 'Recently';
+        const isMatchRequest = data.type === 'match_request' && !data.read;
         
         return `
             <div class="notification-item ${data.read ? '' : 'unread'}" data-id="${id}">
@@ -116,24 +117,120 @@ function renderNotifications(docs) {
                 <div class="notification-content">
                     <div class="notification-message">${data.message}</div>
                     <div class="notification-time">${time}</div>
+                    ${isMatchRequest ? `
+                        <div class="notification-actions">
+                            <button class="btn-accept" data-notif-id="${id}" data-match-id="${data.data.matchRequestId}">Accept</button>
+                            <button class="btn-decline" data-notif-id="${id}" data-match-id="${data.data.matchRequestId}">Decline</button>
+                        </div>
+                    ` : ''}
                 </div>
             </div>
         `;
     }).join('');
 
-    // Add click events to mark as read
+    // Add click events for marking as read (on the whole item)
     list.querySelectorAll('.notification-item').forEach(item => {
-        item.addEventListener('click', async () => {
+        item.addEventListener('click', async (e) => {
+            if (e.target.tagName === 'BUTTON') return; // Don't mark as read if clicking buttons
+            
             const id = item.dataset.id;
             const notificationRef = doc(db, "notifications", id);
             await updateDoc(notificationRef, { read: true });
-            
-            // If it has a slotId, maybe navigate?
-            // For now just mark as read
         });
     });
 
+    // Add action buttons logic
+    list.querySelectorAll('.btn-accept').forEach(btn => {
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            handleMatchAccept(btn.dataset.notifId, btn.dataset.matchId);
+        };
+    });
+
+    list.querySelectorAll('.btn-decline').forEach(btn => {
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            handleMatchDecline(btn.dataset.notifId, btn.dataset.matchId);
+        };
+    });
+
     if (window.lucide) window.lucide.createIcons();
+}
+
+/**
+ * Handle Match Acceptance
+ */
+async function handleMatchAccept(notifId, matchId) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+        // 1. Get Match Request Details
+        const matchRef = doc(db, "matchRequests", matchId);
+        const matchSnap = await getDoc(matchRef);
+        if (!matchSnap.exists()) throw new Error("Match request not found");
+        const matchData = matchSnap.data();
+
+        // 2. Update Match Request
+        await updateDoc(matchRef, { 
+            status: "accepted",
+            updatedAt: serverTimestamp()
+        });
+
+        // 3. Update Slot Status
+        const slotRef = doc(db, "availabilitySlots", matchData.slotId);
+        await updateDoc(slotRef, { 
+            status: "booked", // Or "matched" based on project logic
+            updatedAt: serverTimestamp()
+        });
+
+        // 4. Send "Say hi 👋" Message to start the chat
+        // Structure: participants is an array of UIDs
+        await addDoc(collection(db, "messages"), {
+            text: "Say hi 👋",
+            senderId: "system", // Mark as system to distinguish
+            participants: [user.uid, matchData.requesterId],
+            createdAt: serverTimestamp(),
+            type: "system_intro"
+        });
+
+        // 5. Mark notification as read
+        await updateDoc(doc(db, "notifications", notifId), { read: true });
+
+        // 6. Notify the requester
+        const userSnap = await getDoc(doc(db, "users", user.uid));
+        const senderName = userSnap.exists() ? (userSnap.data().name || "A peer") : "A peer";
+        
+        await addDoc(collection(db, "notifications"), {
+            recipientId: matchData.requesterId,
+            senderId: user.uid,
+            type: "match_accept",
+            message: `${senderName} accepted your match request! You can now chat.`,
+            read: false,
+            createdAt: serverTimestamp()
+        });
+
+        alert("Match accepted! Start chatting in the Dashboard.");
+    } catch (error) {
+        console.error("Error accepting match:", error);
+        alert("Failed to accept match. It might have been deleted.");
+    }
+}
+
+/**
+ * Handle Match Decline
+ */
+async function handleMatchDecline(notifId, matchId) {
+    try {
+        await updateDoc(doc(db, "matchRequests", matchId), { 
+            status: "rejected", 
+            updatedAt: serverTimestamp() 
+        });
+        await updateDoc(doc(db, "notifications", notifId), { read: true });
+        alert("Match request declined.");
+    } catch (error) {
+        console.error("Error declining match:", error);
+    }
 }
 
 /**
@@ -170,6 +267,32 @@ export async function sendHelpRequestNotification(senderName, subject, slotId) {
         console.log(`Sent ${notificationPromises.length} notifications for ${subject}`);
     } catch (error) {
         console.error("Error sending notifications:", error);
+    }
+}
+
+/**
+ * Send a notification to the slot owner when someone requests a match
+ */
+export async function sendMatchRequestNotification(recipientId, senderName, subject, matchRequestId) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+        await addDoc(collection(db, "notifications"), {
+            recipientId: recipientId,
+            senderId: user.uid,
+            type: "match_request",
+            message: `${senderName} wants to match with you for ${subject}`,
+            data: {
+                matchRequestId: matchRequestId,
+                subject: subject
+            },
+            read: false,
+            createdAt: serverTimestamp()
+        });
+        console.log(`Sent match request notification to ${recipientId}`);
+    } catch (error) {
+        console.error("Error sending match request notification:", error);
     }
 }
 
