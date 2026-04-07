@@ -337,18 +337,11 @@
     <script type="module">
         import { auth, db } from "./firebase.js";
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import {
-            collection,
-            addDoc,
-            getDocs,
-            updateDoc,
-            deleteDoc,
-            doc,
-            query,
-            where,
             orderBy,
-            Timestamp
+            Timestamp,
+            getDoc
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { setupNotifications, sendHelpRequestNotification } from "./notifications.js";
 
         const TIME_SLOTS = [
             "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
@@ -378,6 +371,7 @@
             }
 
             currentUser = user;
+            setupNotifications();
             await loadUserSlots();
         });
 
@@ -754,7 +748,12 @@
                     updatedAt: Timestamp.now()
                 };
 
-                await addDoc(slotsRef, newSlot);
+                const docRef = await addDoc(slotsRef, newSlot);
+
+                // Send notifications to users who offer help in this subject
+                const userSnap = await getDoc(doc(db, "users", currentUser.uid));
+                const senderName = userSnap.exists() ? userSnap.data().name : "A peer";
+                sendHelpRequestNotification(senderName, subject, docRef.id);
 
                 dateInput.value = today;
                 subjectSelect.value = "";

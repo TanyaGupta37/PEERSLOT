@@ -8,6 +8,7 @@ import {
   getDoc,
   updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { setupNotifications } from "./notifications.js";
 
 /* ===== Helpers ===== */
 
@@ -78,6 +79,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   currentUser = user;
+  setupNotifications();
 
   const snap = await getDoc(doc(db, "users", user.uid));
   if (!snap.exists()) {
