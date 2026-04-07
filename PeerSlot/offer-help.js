@@ -233,7 +233,7 @@ async function handleMatchRequest() {
     errorEl.style.display = "none";
     errorEl.textContent = "";
 
-    await addDoc(collection(db, "matchRequests"), {
+    const docRef = await addDoc(collection(db, "matchRequests"), {
       slotId: selectedSlot.slotId,
       slotOwnerId: selectedPeer.uid,
       requesterId: currentUid,

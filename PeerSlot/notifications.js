@@ -7,6 +7,7 @@ import {
     onSnapshot,
     orderBy,
     doc,
+    getDoc,
     updateDoc,
     serverTimestamp,
     getDocs
@@ -107,7 +108,7 @@ function renderNotifications(docs) {
         const data = docSnap.data();
         const id = docSnap.id;
         const time = data.createdAt ? formatTimeAgo(data.createdAt.toDate()) : 'Recently';
-        const isMatchRequest = data.type === 'match_request' && !data.read;
+        const isMatchRequest = data.type === 'match_request' && data.data?.matchRequestId;
         
         return `
             <div class="notification-item ${data.read ? '' : 'unread'}" data-id="${id}">
