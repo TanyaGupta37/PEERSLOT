@@ -18,10 +18,24 @@ import {
  */
 export function setupNotifications() {
     const user = auth.currentUser;
-    if (!user) return;
+    if (!user) {
+        console.warn("🔔 setupNotifications: No user logged in. Skipping.");
+        return;
+    }
+
+    // Prevent double initialization
+    if (document.querySelector('.bell-wrapper')) {
+        console.log("🔔 setupNotifications: Already initialized.");
+        return;
+    }
 
     const bell = document.querySelector('.bell');
-    if (!bell) return;
+    if (!bell) {
+        console.warn("🔔 setupNotifications: Bell icon not found in DOM.");
+        return;
+    }
+
+    console.log(`🔔 setupNotifications: Starting listener for ${user.uid}`);
 
     // Wrap bell in a relative container for absolute positioning of dropdown
     const wrapper = document.createElement('div');
@@ -72,6 +86,7 @@ export function setupNotifications() {
     );
 
     onSnapshot(q, (snapshot) => {
+        console.log(`🔔 Notifications update: ${snapshot.docs.length} found`);
         renderNotifications(snapshot.docs);
         
         // Show badge if there are unread notifications
@@ -80,6 +95,11 @@ export function setupNotifications() {
             badge.classList.add('show');
         } else if (!hasUnread) {
             badge.classList.remove('show');
+        }
+    }, (error) => {
+        console.error("❌ Notification listener error:", error);
+        if (error.code === 'failed-precondition') {
+            console.error("👉 This usually means a Firestore Index is missing. Check the console for a link to fix it.");
         }
     });
 
