@@ -109,6 +109,7 @@ function renderNotifications(docs) {
         const id = docSnap.id;
         const time = data.createdAt ? formatTimeAgo(data.createdAt.toDate()) : 'Recently';
         const isMatchRequest = data.type === 'match_request' && data.data?.matchRequestId;
+        const isMatchAccepted = data.type === 'match_accepted';
         
         return `
             <div class="notification-item ${data.read ? '' : 'unread'}" data-id="${id}">
@@ -122,6 +123,10 @@ function renderNotifications(docs) {
                         <div class="notification-actions">
                             <button class="btn-accept" data-notif-id="${id}" data-match-id="${data.data.matchRequestId}">Accept</button>
                             <button class="btn-decline" data-notif-id="${id}" data-match-id="${data.data.matchRequestId}">Decline</button>
+                        </div>
+                    ` : isMatchAccepted ? `
+                        <div style="margin-top: 8px; padding: 8px; background: #f0f9ff; border-radius: 8px; border-left: 3px solid #0084ff;">
+                            <button class="btn-start-chat" data-peer-id="${data.senderId}" style="width: 100%; padding: 8px; border: none; background: #0084ff; color: white; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: 600;">Start chatting</button>
                         </div>
                     ` : ''}
                 </div>
@@ -155,7 +160,41 @@ function renderNotifications(docs) {
         };
     });
 
+    list.querySelectorAll('.btn-start-chat').forEach(btn => {
+        btn.onclick = (e) => {
+            e.stopPropagation();
+            handleStartChat(btn.dataset.peerId);
+        };
+    });
+
     if (window.lucide) window.lucide.createIcons();
+}
+
+function handleStartChat(partnerId) {
+    const user = auth.currentUser;
+    if (!user) {
+        window.location.href = 'dashboard.html';
+        return;
+    }
+
+    const dropdown = document.querySelector('.notification-dropdown');
+    if (dropdown && dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+    }
+
+    if (window.setCurrentChatUser) {
+        window.setCurrentChatUser(partnerId);
+    }
+
+    if (window.loadChatList) {
+        window.loadChatList(user.uid);
+    }
+
+    if (window.openChat) {
+        window.openChat(partnerId, user.uid);
+    } else {
+        window.location.href = 'dashboard.html';
+    }
 }
 
 /**
@@ -191,12 +230,33 @@ async function handleMatchAccept(notifId, matchId) {
             text: "Say hi 👋",
             senderId: "system", // Mark as system to distinguish
             participants: [user.uid, matchData.requesterId],
-            createdAt: serverTimestamp(),
+            createdAt: new Date(),
             type: "system_intro"
         });
 
-        // 5. Mark notification as read
-        await updateDoc(doc(db, "notifications", notifId), { read: true });
+        // Tell dashboard which conversation should be active.
+        if (window.setCurrentChatUser) {
+            window.setCurrentChatUser(matchData.requesterId);
+        }
+
+        // Refresh chat list and open the new conversation if available.
+        if (window.loadChatList) {
+            window.loadChatList(user.uid);
+        }
+        if (window.openChat) {
+            // Slight delay gives the chat list listener time to refresh.
+            setTimeout(() => window.openChat(matchData.requesterId, user.uid), 100);
+        }
+
+        // 5. Update the notification in-place instead of marking as read
+        const requesterSnap = await getDoc(doc(db, "users", matchData.requesterId));
+        const requesterName = requesterSnap.exists() ? (requesterSnap.data().name || "A peer") : "A peer";
+        
+        await updateDoc(doc(db, "notifications", notifId), { 
+            message: `You matched with ${requesterName}. Say hi!`,
+            type: "match_accepted",
+            updatedAt: serverTimestamp()
+        });
 
         // 6. Notify the requester
         const userSnap = await getDoc(doc(db, "users", user.uid));
@@ -205,13 +265,11 @@ async function handleMatchAccept(notifId, matchId) {
         await addDoc(collection(db, "notifications"), {
             recipientId: matchData.requesterId,
             senderId: user.uid,
-            type: "match_accept",
+            type: "match_accepted",
             message: `${senderName} accepted your match request! You can now chat.`,
             read: false,
             createdAt: serverTimestamp()
         });
-
-        alert("Match accepted! Start chatting in the Dashboard.");
     } catch (error) {
         console.error("Error accepting match:", error);
         alert("Failed to accept match. It might have been deleted.");
@@ -301,6 +359,7 @@ function getIconForType(type) {
     switch (type) {
         case 'help_request': return 'help-circle';
         case 'match_accept': return 'check-circle';
+        case 'match_accepted': return 'check-circle';
         default: return 'bell';
     }
 }
