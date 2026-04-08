@@ -295,12 +295,27 @@ dashboard.css body {
   background: #edf2ff;
   color: #0f172a;
   align-self: flex-start;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 60px;
 }
 
 .chat-message.own {
   background: #2563eb;
   color: white;
   align-self: flex-end;
+}
+
+.message-text {
+  margin-bottom: 4px;
+}
+
+.message-time {
+  font-size: 11px;
+  opacity: 0.7;
+  align-self: flex-end;
+  margin-top: auto;
 }
 
 .chat-input {

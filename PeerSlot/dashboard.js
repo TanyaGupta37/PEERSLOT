@@ -111,7 +111,15 @@ function openChat(partnerId, userId) {
     relevantMsgs.forEach(msg => {
       const div = document.createElement("div");
       div.className = `chat-message ${msg.senderId === userId ? 'own' : ''}`;
-      div.innerText = msg.text;
+      
+      // Format timestamp
+      const timestamp = msg.createdAt ? new Date(msg.createdAt.seconds * 1000) : new Date();
+      const timeString = timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      div.innerHTML = `
+        <div class="message-text">${msg.text}</div>
+        <div class="message-time">${timeString}</div>
+      `;
       messagesDiv.appendChild(div);
     });
     
@@ -132,7 +140,11 @@ window.sendMessage = async () => {
     if (messagesDiv) {
       const div = document.createElement("div");
       div.className = "chat-message own";
-      div.innerText = text;
+      const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      div.innerHTML = `
+        <div class="message-text">${text}</div>
+        <div class="message-time">${timeString}</div>
+      `;
       messagesDiv.appendChild(div);
       messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
