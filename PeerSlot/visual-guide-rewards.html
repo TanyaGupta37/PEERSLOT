@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rewards System Visual Guide</title>
+  <style>
+    body { font-family: Arial; margin: 40px; background: #f5f5f5; max-width: 1000px; margin: 0 auto; padding: 20px; }
+    .diagram { background: white; padding: 30px; border-radius: 10px; margin: 20px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h1 { color: #2563eb; text-align: center; }
+    h2 { color: #333; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
+    .flow { display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; }
+    .box { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 10px;
+      text-align: center;
+      min-width: 150px;
+      font-weight: bold;
+    }
+    .box.token { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .box.badge { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .arrow { font-size: 2em; color: #2563eb; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+    th, td { padding: 15px; text-align: left; border-bottom: 1px solid #ddd; }
+    th { background: #f3f4f6; font-weight: bold; }
+    .token-calc { background: #fef3c7; padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b; }
+    .badge-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+    .badge-item { background: #f0f9ff; padding: 15px; border-radius: 8px; border: 2px solid #0ea5e9; text-align: center; }
+    .badge-item strong { display: block; font-size: 1.3em; margin: 10px 0; }
+    .scenario { background: #f9f9f9; padding: 20px; border-left: 4px solid #2563eb; margin: 15px 0; border-radius: 4px; }
+    code { background: #f3f4f6; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+  </style>
+</head>
+<body>
+
+<h1>🎯 PeerSlot Rewards System - Visual Guide</h1>
+
+<div class="diagram">
+  <h2>Session Types & Token Awards</h2>
+  <div style="margin: 20px 0;">
+    
+    <div style="margin: 20px 0; padding: 20px; background: #e8f5e9; border-radius: 8px; border-left: 4px solid #4caf50;">
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="font-size: 3em;">👤</div>
+        <div>
+          <strong style="font-size: 1.2em;">User as HELPER (Slot Owner)</strong>
+          <p>When you offer a time slot and help another peer</p>
+          <p style="font-size: 1.3em; color: #4caf50; margin: 10px 0;">
+            +50 <span style="font-size: 0.8em;">PeerTokens</span>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin: 20px 0; padding: 20px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <div style="font-size: 3em;">👤</div>
+        <div>
+          <strong style="font-size: 1.2em;">User as LEARNER (Requester)</strong>
+          <p>When you book a slot to learn from another peer</p>
+          <p style="font-size: 1.3em; color: #2196f3; margin: 10px 0;">
+            +20 <span style="font-size: 0.8em;">PeerTokens</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="diagram">
+  <h2>How Page Calculates Your Rewards</h2>
+  <div style="text-align: center; font-size: 0.95em; line-height: 1.8;">
+    <div class="box">👤 User Opens Rewards Page</div>
+    <div class="arrow">↓</div>
+    <div class="box">🔍 System Queries Database</div>
+    <div class="arrow">↓</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0;">
+      <div class="box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        Query 1:<br>
+        requesterId == You<br>
+        = Times You LEARNED
+      </div>
+      <div class="box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        Query 2:<br>
+        slotOwnerId == You<br>
+        = Times You HELPED
+      </div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="box">📊 Calculate Tokens</div>
+    <div class="arrow">↓</div>
+    <div style="background: #fff8dc; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #f59e0b;">
+      <strong style="display: block; margin-bottom: 10px;">Token Formula:</strong>
+      (Learning Sessions × 20) + (Helping Sessions × 50) = Total Tokens
+    </div>
+    <div class="arrow">↓</div>
+    <div class="box badge">🏆 Check Badges</div>
+    <div class="arrow">↓</div>
+    <div class="box">💾 Save to Database</div>
+    <div class="arrow">↓</div>
+    <div class="box" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">✨ Display Everything</div>
+  </div>
+</div>
+
+<div class="diagram">
+  <h2>Badge Unlock Thresholds</h2>
+  
+  <h3 style="margin-top: 20px;">🤝 HELPING BADGES (From Helping Sessions)</h3>
+  <table>
+    <tr>
+      <th>Token Milestone</th>
+      <th>Badge</th>
+      <th>What It Means</th>
+    </tr>
+    <tr>
+      <td><strong>50+</strong></td>
+      <td>🥉 Bronze Helper</td>
+      <td>You've helped 1 peer</td>
+    </tr>
+    <tr>
+      <td><strong>150+</strong></td>
+      <td>🥈 Silver Mentor</td>
+      <td>You've helped 3 peers (150÷50=3)</td>
+    </tr>
+    <tr>
+      <td><strong>300+</strong></td>
+      <td>🥇 Gold Expert</td>
+      <td>You've helped 6 peers</td>
+    </tr>
+    <tr>
+      <td><strong>600+</strong></td>
+      <td>💎 Platinum Authority</td>
+      <td>You've helped 12 peers</td>
+    </tr>
+    <tr>
+      <td><strong>1000+</strong></td>
+      <td>👑 Diamond Master</td>
+      <td>You've helped 20 peers</td>
+    </tr>
+  </table>
+
+  <h3 style="margin-top: 20px;">📚 LEARNING BADGES (From Learning Sessions)</h3>
+  <table>
+    <tr>
+      <th>Token Milestone</th>
+      <th>Badge</th>
+      <th>What It Means</th>
+    </tr>
+    <tr>
+      <td><strong>20+</strong></td>
+      <td>📚 Novice Learner</td>
+      <td>You've learned from 1 peer</td>
+    </tr>
+    <tr>
+      <td><strong>60+</strong></td>
+      <td>🎓 Active Learner</td>
+      <td>You've learned from 3 peers</td>
+    </tr>
+    <tr>
+      <td><strong>120+</strong></td>
+      <td>⭐ Super Learner</td>
+      <td>You've learned from 6 peers</td>
+    </tr>
+    <tr>
+      <td><strong>200+</strong></td>
+      <td>🌟 Champion Learner</td>
+      <td>You've learned from 10 peers</td>
+    </tr>
+  </table>
+
+  <h3 style="margin-top: 20px;">🌟 TOTAL ACHIEVEMENT BADGES (Combined Tokens)</h3>
+  <table>
+    <tr>
+      <th>Token Milestone</th>
+      <th>Badge</th>
+      <th>How To Unlock</th>
+    </tr>
+    <tr>
+      <td><strong>70+</strong></td>
+      <td>🚀 Starter</td>
+      <td>1 help session + 1 learning session</td>
+    </tr>
+    <tr>
+      <td><strong>210+</strong></td>
+      <td>📈 Climber</td>
+      <td>3 help sessions + 3 learning sessions</td>
+    </tr>
+    <tr>
+      <td><strong>420+</strong></td>
+      <td>🌍 Global Contributor</td>
+      <td>6 help sessions + 6 learning sessions</td>
+    </tr>
+    <tr>
+      <td><strong>800+</strong></td>
+      <td>⚡ Legendary</td>
+      <td>12+ help sessions + 10+ learning sessions</td>
+    </tr>
+  </table>
+</div>
+
+<div class="diagram">
+  <h2>Real-World Examples</h2>
+
+  <div class="scenario">
+    <strong>Example 1: New User (0 sessions)</strong>
+    <ul>
+      <li>Helping Sessions: 0 → 0 tokens</li>
+      <li>Learning Sessions: 0 → 0 tokens</li>
+      <li>Total: 0 tokens</li>
+      <li>Badges: None yet</li>
+      <li>Status: "Complete sessions to earn PeerTokens and unlock badges!"</li>
+    </ul>
+  </div>
+
+  <div class="scenario">
+    <strong>Example 2: After 1 Help Session</strong>
+    <ul>
+      <li>Helping Sessions: 1 → <span style="color: #4caf50; font-weight: bold;">50 tokens</span></li>
+      <li>Learning Sessions: 0 → 0 tokens</li>
+      <li>Total: <span style="font-size: 1.2em; color: #4caf50; font-weight: bold;">50 tokens</span></li>
+      <li>Badges Unlocked: <span style="background: #fff3e0; padding: 5px 10px; border-radius: 5px;">🥉 Bronze Helper</span></li>
+      <li>Next Goal: 100 more tokens to reach Silver Mentor</li>
+    </ul>
+  </div>
+
+  <div class="scenario">
+    <strong>Example 3: After 5 Help + 3 Learning Sessions</strong>
+    <ul>
+      <li>Helping Sessions: 5 → <span style="color: #4caf50; font-weight: bold;">250 tokens</span></li>
+      <li>Learning Sessions: 3 → <span style="color: #2196f3; font-weight: bold;">60 tokens</span></li>
+      <li>Total: <span style="font-size: 1.2em; color: #f59e0b; font-weight: bold;">310 tokens</span></li>
+      <li>Badges Unlocked:</li>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0;">
+        <span style="background: #fff3e0; padding: 5px 10px; border-radius: 5px;"><strong>🥉</strong> Bronze Helper</span>
+        <span style="background: #fff3e0; padding: 5px 10px; border-radius: 5px;"><strong>🥈</strong> Silver Mentor</span>
+        <span style="background: #e3f2fd; padding: 5px 10px; border-radius: 5px;"><strong>🎓</strong> Active Learner</span>
+        <span style="background: #f3e5f5; padding: 5px 10px; border-radius: 5px;"><strong>🚀</strong> Starter</span>
+        <span style="background: #f3e5f5; padding: 5px 10px; border-radius: 5px;"><strong>📈</strong> Climber</span>
+      </div>
+      <li>Next Goal: 90 more tokens to reach Gold Expert (300)</li>
+    </ul>
+  </div>
+
+  <div class="scenario">
+    <strong>Example 4: Power User (15 Help + 12 Learning)</strong>
+    <ul>
+      <li>Helping Sessions: 15 → <span style="color: #4caf50; font-weight: bold;">750 tokens</span></li>
+      <li>Learning Sessions: 12 → <span style="color: #2196f3; font-weight: bold;">240 tokens</span></li>
+      <li>Total: <span style="font-size: 1.3em; color: #f59e0b; font-weight: bold;">990 tokens</span></li>
+      <li>Badges Unlocked: 13 out of 15! 🎉</li>
+      <li>Missing: ⚡ Legendary (needs 800+ tokens) - Only 10 away!</li>
+    </ul>
+  </div>
+</div>
+
+<div class="diagram">
+  <h2>Badge Display on Rewards Page</h2>
+  <p>When you visit the rewards page, you'll see:</p>
+  
+  <div style="background: white; padding: 20px; border: 2px solid #e5e7eb; border-radius: 8px; margin: 20px 0;">
+    <div style="border-bottom: 2px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 15px;">
+      <strong>💰 PeerToken Balance Card:</strong>
+      <div style="font-size: 2em; margin-top: 10px; color: #2563eb;"><strong>245</strong> PeerTokens</div>
+      <div style="font-size: 1.2em; margin-top: 10px; color: #2563eb;"><strong>5</strong> Badges earned</div>
+    </div>
+
+    <div style="border-bottom: 2px solid #e5e7eb; padding: 15px 0; margin-bottom: 15px;">
+      <strong>🏆 Badges Unlocked Grid:</strong>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 15px;">
+        <div style="background: #f0f9ff; border: 2px solid #0ea5e9; padding: 10px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 1.5em;">🥉</div>
+          <strong>Bronze Helper</strong>
+          <small>50 tokens</small>
+        </div>
+        <div style="background: #f0f9ff; border: 2px solid #0ea5e9; padding: 10px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 1.5em;">🥈</div>
+          <strong>Silver Mentor</strong>
+          <small>150 tokens</small>
+        </div>
+        <div style="background: #f0f9ff; border: 2px solid #0ea5e9; padding: 10px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 1.5em;">📚</div>
+          <strong>Novice Learner</strong>
+          <small>20 tokens</small>
+        </div>
+        <div style="background: #f0f9ff; border: 2px solid #0ea5e9; padding: 10px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 1.5em;">🎓</div>
+          <strong>Active Learner</strong>
+          <small>60 tokens</small>
+        </div>
+        <div style="background: #f0f9ff; border: 2px solid #0ea5e9; padding: 10px; border-radius: 8px; text-align: center;">
+          <div style="font-size: 1.5em;">🚀</div>
+          <strong>Starter</strong>
+          <small>70 tokens</small>
+        </div>
+      </div>
+    </div>
+
+    <div style="background: #f3f4f6; padding: 15px; border-radius: 8px;">
+      <strong>🎯 Progress to Next Badge:</strong>
+      <div style="margin: 10px 0;">🥇 Gold Expert: <strong>250 / 300 tokens (83%)</strong></div>
+      <div style="width: 100%; height: 20px; background: #ddd; border-radius: 10px; overflow: hidden;">
+        <div style="width: 83%; height: 100%; background: linear-gradient(90deg, #2563eb, #22c55e); border-radius: 10px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="diagram">
+  <h2>Key Points to Remember</h2>
+  <ul style="font-size: 1.1em; line-height: 1.8;">
+    <li>✅ <strong>Automatic:</strong> No manual tracking needed - tokens calculated automatically</li>
+    <li>✅ <strong>Retroactive:</strong> All past sessions counted, even if you never checked before</li>
+    <li>✅ <strong>Clear Formula:</strong> (Helps × 50) + (Learns × 20) = Total Tokens</li>
+    <li>✅ <strong>15 Badges:</strong> Multiple ways to earn recognition</li>
+    <li>✅ <strong>Real-Time:</strong> Badges unlock instantly when you hit the threshold</li>
+    <li>✅ <strong>Transparent:</strong> You always know your progress to next badge</li>
+    <li>✅ <strong>Persistent:</strong> Your tokens saved in database forever</li>
+  </ul>
+</div>
+
+</body>
+</html>

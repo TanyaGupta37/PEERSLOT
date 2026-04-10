@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rewards System Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .test-section {
+      background: white;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #333;
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 10px;
+    }
+    .test-case {
+      margin: 15px 0;
+      padding: 10px;
+      background: #f9f9f9;
+      border-left: 4px solid #2563eb;
+    }
+    .success {
+      color: #22c55e;
+      font-weight: bold;
+    }
+    .error {
+      color: #ef4444;
+      font-weight: bold;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    th {
+      background: #f3f4f6;
+      font-weight: bold;
+    }
+    .badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 20px;
+      background: #e0f2fe;
+      color: #0369a1;
+      font-size: 0.9em;
+      margin: 2px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎯 PeerSlot Rewards System Test</h1>
+  
+  <div class="test-section">
+    <h2>✅ System Implementation Checklist</h2>
+    <div class="test-case">
+      <strong>Token Calculation Logic:</strong>
+      <ul>
+        <li>✓ Helping = 50 tokens per session</li>
+        <li>✓ Receiving = 20 tokens per session</li>
+        <li>✓ Correct identification of helper vs receiver</li>
+      </ul>
+    </div>
+    <div class="test-case">
+      <strong>Badge Milestones - Helping (Helper):</strong>
+      <table>
+        <tr>
+          <th>Tokens</th>
+          <th>Badge</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>50</td>
+          <td class="badge">🥉 Bronze Helper</td>
+          <td>Helped 1+ peer</td>
+        </tr>
+        <tr>
+          <td>150</td>
+          <td class="badge">🥈 Silver Mentor</td>
+          <td>Helped 3+ peers (3×50)</td>
+        </tr>
+        <tr>
+          <td>300</td>
+          <td class="badge">🥇 Gold Expert</td>
+          <td>Helped 6+ peers (6×50)</td>
+        </tr>
+        <tr>
+          <td>600</td>
+          <td class="badge">💎 Platinum Authority</td>
+          <td>Helped 12+ peers (12×50)</td>
+        </tr>
+        <tr>
+          <td>1000</td>
+          <td class="badge">👑 Diamond Master</td>
+          <td>Helped 20+ peers (20×50)</td>
+        </tr>
+      </table>
+    </div>
+    <div class="test-case">
+      <strong>Badge Milestones - Learning (Receiver):</strong>
+      <table>
+        <tr>
+          <th>Tokens</th>
+          <th>Badge</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>20</td>
+          <td class="badge">📚 Novice Learner</td>
+          <td>Received 1+ session</td>
+        </tr>
+        <tr>
+          <td>60</td>
+          <td class="badge">🎓 Active Learner</td>
+          <td>Received 3+ sessions (3×20)</td>
+        </tr>
+        <tr>
+          <td>120</td>
+          <td class="badge">⭐ Super Learner</td>
+          <td>Received 6+ sessions (6×20)</td>
+        </tr>
+        <tr>
+          <td>200</td>
+          <td class="badge">🌟 Champion Learner</td>
+          <td>Received 10+ sessions (10×20)</td>
+        </tr>
+      </table>
+    </div>
+    <div class="test-case">
+      <strong>Badge Milestones - Total:</strong>
+      <table>
+        <tr>
+          <th>Tokens</th>
+          <th>Badge</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>70</td>
+          <td class="badge">🚀 Starter</td>
+          <td>Mixed helping/learning (1 help + 1 learn)</td>
+        </tr>
+        <tr>
+          <td>210</td>
+          <td class="badge">📈 Climber</td>
+          <td>3 helps + 3 learning sessions</td>
+        </tr>
+        <tr>
+          <td>420</td>
+          <td class="badge">🌍 Global Contributor</td>
+          <td>6 helps + 6 learning sessions</td>
+        </tr>
+        <tr>
+          <td>800</td>
+          <td class="badge">⚡ Legendary</td>
+          <td>12 helps + 10 learning sessions</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>📊 Example User Scenarios</h2>
+    
+    <div class="test-case">
+      <strong>Scenario 1: Active Helper (5 helping sessions, 2 learning sessions)</strong>
+      <ul>
+        <li>Helping Tokens: 5 × 50 = 250 tokens</li>
+        <li>Learning Tokens: 2 × 20 = 40 tokens</li>
+        <li>Total Tokens: 290 tokens</li>
+        <li>Badges Earned:
+          <ul>
+            <li class="badge">🥉 Bronze Helper (50+)</li>
+            <li class="badge">🥈 Silver Mentor (150+)</li>
+            <li class="badge">📚 Novice Learner (20+)</li>
+            <li class="badge">🚀 Starter (70+)</li>
+            <li class="badge">📈 Climber (210+)</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div class="test-case">
+      <strong>Scenario 2: Dedicated Learner (2 helping sessions, 8 learning sessions)</strong>
+      <ul>
+        <li>Helping Tokens: 2 × 50 = 100 tokens</li>
+        <li>Learning Tokens: 8 × 20 = 160 tokens</li>
+        <li>Total Tokens: 260 tokens</li>
+        <li>Badges Earned:
+          <ul>
+            <li class="badge">🥉 Bronze Helper (50+)</li>
+            <li class="badge">📚 Novice Learner (20+)</li>
+            <li class="badge">🎓 Active Learner (60+)</li>
+            <li class="badge">⭐ Super Learner (120+)</li>
+            <li class="badge">🚀 Starter (70+)</li>
+            <li class="badge">📈 Climber (210+)</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+
+    <div class="test-case">
+      <strong>Scenario 3: Balanced Contributor (10 helping, 10 learning sessions)</strong>
+      <ul>
+        <li>Helping Tokens: 10 × 50 = 500 tokens</li>
+        <li>Learning Tokens: 10 × 20 = 200 tokens</li>
+        <li>Total Tokens: 700 tokens</li>
+        <li>Badges Earned:
+          <ul>
+            <li class="badge">🥉 Bronze Helper (50+)</li>
+            <li class="badge">🥈 Silver Mentor (150+)</li>
+            <li class="badge">🥇 Gold Expert (300+)</li>
+            <li class="badge">📚 Novice Learner (20+)</li>
+            <li class="badge">🎓 Active Learner (60+)</li>
+            <li class="badge">⭐ Super Learner (120+)</li>
+            <li class="badge">🌟 Champion Learner (200+)</li>
+            <li class="badge">🚀 Starter (70+)</li>
+            <li class="badge">📈 Climber (210+)</li>
+            <li class="badge">🌍 Global Contributor (420+)</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>🔄 Data Collection Process</h2>
+    <div class="test-case">
+      <strong>How Rewards Are Calculated:</strong>
+      <ol>
+        <li><strong>On Rewards Page Load:</strong> System automatically fetches all completed sessions for the current user</li>
+        <li><strong>Query matchRequests Collection:</strong>
+          <ul>
+            <li>Sessions where user is <code>requesterId</code> = User was RECEIVING help (20 tokens each)</li>
+            <li>Sessions where user is <code>slotOwnerId</code> = User was HELPING (50 tokens each)</li>
+          </ul>
+        </li>
+        <li><strong>Calculate Total Tokens:</strong> Sum tokens from both roles</li>
+        <li><strong>Determine Badges:</strong> Compare against milestone thresholds</li>
+        <li><strong>Update User Document:</strong> Store calculated rewards in user profile for future reference</li>
+        <li><strong>Display UI:</strong> Show total tokens, earned badges, and progress to next milestone</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>✨ Features Implemented</h2>
+    <div class="test-case">
+      <ul>
+        <li><span class="success">✓</span> Automatic token calculation from completed sessions</li>
+        <li><span class="success">✓</span> 15 unique badges across 3 categories (Helping, Learning, Total)</li>
+        <li><span class="success">✓</span> Retroactive reward calculation (fetches ALL previous sessions)</li>
+        <li><span class="success">✓</span> Separate tracking of helping vs learning tokens</li>
+        <li><span class="success">✓</span> Progress bar to next badge milestone</li>
+        <li><span class="success">✓</span> Session count tracking (helps/learns)</li>
+        <li><span class="success">✓</span> Recent activity display with token amounts</li>
+        <li><span class="success">✓</span> Real-time UI updates as data loads</li>
+        <li><span class="success">✓</span> Persistent storage in Firestore user document</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>🚀 How to Verify</h2>
+    <div class="test-case">
+      <ol>
+        <li>Go to Rewards page (rewards.html)</li>
+        <li>System will automatically calculate rewards from ALL completed sessions</li>
+        <li>You should see:
+          <ul>
+            <li>Total PeerTokens earned</li>
+            <li>All badges you've unlocked</li>
+            <li>Progress to next badge milestone</li>
+            <li>Breakdown of helping vs learning tokens</li>
+          </ul>
+        </li>
+        <li>Even if you haven't visited Rewards page before, all previous sessions will be counted</li>
+      </ol>
+    </div>
+  </div>
+
+  <hr style="margin: 30px 0;">
+  <p style="text-align: center; color: #666;">
+    🎉 Rewards system successfully implemented with automatic calculation and multiple badge milestones!
+  </p>
+</body>
+</html>

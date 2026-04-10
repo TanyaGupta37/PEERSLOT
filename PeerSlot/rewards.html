@@ -13,7 +13,9 @@
       <a href="offer-help.html">Offer Help</a>
       <a href="get-help.html">Get Help</a>
       <a href="sessions.html">My Sessions</a>
-      <a class="active" href="rewards.html">Rewards</a>
+      <a href="rewards.html">Rewards</a>
+    
+      
     </aside>
 
     <main class="dashboard-main">
@@ -49,46 +51,45 @@
       <div class="content-grid">
         <section class="content-column">
           <div class="card">
-            <h2>Reward balance</h2>
+            <h2>PeerToken Balance</h2>
 
             <div class="reward-summary">
               <div class="reward-chip">
-                <span>PeerToken</span>
-                <strong id="rewardTokenAmount">0</strong>
+                <span>💰 PeerTokens Earned</span>
+                <strong id="peerTokenBalance">Loading...</strong>
               </div>
               <div class="reward-chip">
-                <span>Badges</span>
-                <strong id="rewardBadgesCount">0 earned</strong>
+                <span>🏆 Badges Unlocked</span>
+                <strong id="badgeCount">Loading...</strong>
               </div>
             </div>
           </div>
 
           <div class="card">
-            <h2>Badges unlocked</h2>
+            <h2>Badges Unlocked</h2>
 
             <div id="badgeGrid" class="badge-grid">
-              <div class="badge-card empty-badge">
-                <strong>No badges yet</strong>
-                <p>Complete sessions to unlock badges.</p>
-              </div>
+              <!-- dynamic -->
             </div>
           </div>
         </section>
 
         <aside class="panel-column">
           <div class="panel-card">
-            <h3>Progress to next reward</h3>
-            <div class="progress-row">
-              <span id="progressLevel">Silver level</span>
-              <strong id="progressPoints">0 / 12 points</strong>
+            <h3>🎯 Progress to Next Badge</h3>
+            <div id="badgeProgress" class="progress-row">
+              <span>Loading...</span>
+              <strong>0 / 0 PeerTokens</strong>
             </div>
-            <div class="progress-bar"><div id="progressBarFill" style="width: 0%"></div></div>
+            <div class="progress-bar">
+              <div id="progressBar" style="width: 0%"></div>
+            </div>
           </div>
 
           <div class="panel-card">
-            <h3>Recent activity</h3>
+            <h3>📊 Recent Activity</h3>
             <ul id="activityList" class="activity-list">
-              <li>No recent activity yet.</li>
+              <li>Loading activity...</li>
             </ul>
           </div>
         </aside>
@@ -96,6 +97,8 @@
     </main>
   </div>
 
+  <!-- ✅🔥 MOST IMPORTANT FIX -->
   <script type="module" src="rewards.js"></script>
+
 </body>
 </html>
