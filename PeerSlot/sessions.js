@@ -156,7 +156,9 @@ function buildSession(item, collaborators, slotMap) {
     collaboratorName,
     type: isRequester ? 'received' : 'helped',
     status,
+    isRequester,
     rating: typeof data.rating === 'number' ? data.rating : null,
+    ratingReceived: typeof data.rating === 'number' ? !isRequester : false,
     subject: slot.subject || data.slotSnapshot?.subject || 'General',
     dateLabel,
     rawDate,
@@ -203,9 +205,9 @@ function renderSessions(sessions, searchTerm = '') {
 function renderSummary(sessions) {
   const totalSessions = sessions.length;
   const completedSessions = sessions.filter((session) => session.completed).length;
-  const ratedSessions = sessions.filter((session) => session.rating !== null);
-  const averageRating = ratedSessions.length > 0
-    ? (ratedSessions.reduce((sum, session) => sum + session.rating, 0) / ratedSessions.length).toFixed(1)
+  const receivedRatings = sessions.filter((session) => session.ratingReceived);
+  const averageRating = receivedRatings.length > 0
+    ? (receivedRatings.reduce((sum, session) => sum + session.rating, 0) / receivedRatings.length).toFixed(1)
     : '0.0';
 
   document.getElementById('totalSessions').textContent = totalSessions;
@@ -214,10 +216,12 @@ function renderSummary(sessions) {
 }
 
 function renderTopCollaborators(sessions) {
-  const collaboratorCounts = sessions.reduce((acc, session) => {
-    acc[session.collaboratorName] = (acc[session.collaboratorName] || 0) + 1;
-    return acc;
-  }, {});
+  const collaboratorCounts = sessions
+    .filter((session) => ['booked', 'in_progress', 'completed'].includes(session.status))
+    .reduce((acc, session) => {
+      acc[session.collaboratorName] = (acc[session.collaboratorName] || 0) + 1;
+      return acc;
+    }, {});
 
   const topCollaborators = Object.entries(collaboratorCounts)
     .sort((a, b) => b[1] - a[1])
