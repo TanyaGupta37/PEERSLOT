@@ -51,8 +51,10 @@ service cloud.firestore {
       allow read: if request.auth != null &&
         (resource.data.requesterId == request.auth.uid || resource.data.slotOwnerId == request.auth.uid);
 
-      // Only slot owner can accept (or otherwise update) the request
-      allow update: if request.auth != null && resource.data.slotOwnerId == request.auth.uid;
+      // Requester or slot owner can update the request status during the session lifecycle
+      allow update: if request.auth != null &&
+        (resource.data.requesterId == request.auth.uid || resource.data.slotOwnerId == request.auth.uid) &&
+        request.resource.data.status in ["pending", "booked", "in_progress", "completed"];
 
       // No deletes from client
       allow delete: if false;

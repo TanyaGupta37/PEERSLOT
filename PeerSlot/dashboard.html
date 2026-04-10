@@ -62,15 +62,18 @@
 
         <div class="stats">
           <div class="stat">
-            <i data-lucide="star"></i> 4.8 / 5
+            <i data-lucide="star"></i>
+            <span id="userRating">0.0 / 5</span>
           </div>
 
           <div class="stat">
-            <i data-lucide="users"></i> Peers helped: 12
+            <i data-lucide="users"></i>
+            <span id="userHelped">Peers helped: 0</span>
           </div>
 
           <div class="stat">
-            <i data-lucide="calendar"></i> Sessions booked: 7
+            <i data-lucide="calendar"></i>
+            <span id="sessionsBooked">Sessions booked: 0</span>
           </div>
         </div>
       </div>
@@ -125,6 +128,32 @@
                 <div class="chat-input">
                   <input id="chatInput" placeholder="Type a message...">
                   <button onclick="sendMessage()">Send</button>
+                </div>
+              </div>
+
+              <div id="rating-modal-overlay" class="modal-overlay" style="display: none;">
+                <div class="modal-card rating-modal">
+                  <div class="modal-header">
+                    <div>
+                      <h3>Rate your helper</h3>
+                      <p id="rating-modal-text" class="modal-subtitle">Select 1 to 5 stars</p>
+                    </div>
+                    <button id="rating-modal-close" class="close-btn" aria-label="Close rating dialog">×</button>
+                  </div>
+                  <div class="modal-body">
+                    <div id="rating-stars" class="rating-stars">
+                      <button type="button" class="star-btn" data-value="1" aria-label="1 star">★</button>
+                      <button type="button" class="star-btn" data-value="2" aria-label="2 stars">★</button>
+                      <button type="button" class="star-btn" data-value="3" aria-label="3 stars">★</button>
+                      <button type="button" class="star-btn" data-value="4" aria-label="4 stars">★</button>
+                      <button type="button" class="star-btn" data-value="5" aria-label="5 stars">★</button>
+                    </div>
+                    <div id="rating-feedback" class="rating-feedback">Click a star to set your rating.</div>
+                  </div>
+                  <div class="modal-actions">
+                    <button id="rating-submit" class="btn-primary">Submit rating</button>
+                    <button id="rating-cancel" class="btn-secondary">Cancel</button>
+                  </div>
                 </div>
               </div>
 

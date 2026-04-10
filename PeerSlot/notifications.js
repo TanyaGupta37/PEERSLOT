@@ -106,6 +106,9 @@ function renderNotifications(docs) {
 
     list.innerHTML = docs.map(docSnap => {
         const data = docSnap.data();
+        if (!data.read && data.senderId && window.markChatHighlighted) {
+            window.markChatHighlighted(data.senderId);
+        }
         const id = docSnap.id;
         const time = data.createdAt ? formatTimeAgo(data.createdAt.toDate()) : 'Recently';
         const isMatchRequest = data.type === 'match_request' && data.data?.matchRequestId;
@@ -211,20 +214,19 @@ async function handleMatchAccept(notifId, matchId) {
         if (!matchSnap.exists()) throw new Error("Match request not found");
         const matchData = matchSnap.data();
 
-        // 2. Update Match Request
-        await updateDoc(matchRef, { 
-            status: "accepted",
-            updatedAt: serverTimestamp()
-        });
-
-        // 3. Update Slot Status
+        // 2. Update Match Request to a booked session state
         const slotRef = doc(db, "availabilitySlots", matchData.slotId);
         await updateDoc(slotRef, { 
-            status: "booked", // Or "matched" based on project logic
+            status: "booked",
             updatedAt: serverTimestamp()
         });
 
-        // 4. Send "Say hi 👋" Message to start the chat
+        await updateDoc(matchRef, {
+            status: "booked",
+            updatedAt: serverTimestamp()
+        });
+
+        // 5. Send "Say hi 👋" Message to start the chat
         // Structure: participants is an array of UIDs
         await addDoc(collection(db, "messages"), {
             text: "Say hi 👋",
