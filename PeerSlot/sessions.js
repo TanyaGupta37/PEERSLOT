@@ -1,57 +1,237 @@
-window.addEventListener('DOMContentLoaded', () => {
-  const userSessions = [
-    { subject: 'DSA', collaborator: 'Rohan', date: '2026-04-05', type: 'helped', status: 'completed', rating: 4.9 },
-    { subject: 'ML', collaborator: 'Ananya', date: '2026-04-05', type: 'received', status: 'completed', rating: 4.7 },
-    { subject: 'OS', collaborator: 'Kiran', date: '2026-04-06', type: 'helped', status: 'completed', rating: 4.8 },
-    { subject: 'DSA', collaborator: 'Neha', date: '2026-04-07', type: 'helped', status: 'completed', rating: 4.8 },
-    { subject: 'ML', collaborator: 'Priya', date: '2026-04-07', type: 'received', status: 'completed', rating: 4.6 },
-    { subject: 'OS', collaborator: 'Rohan', date: '2026-04-08', type: 'received', status: 'completed', rating: 4.9 },
-    { subject: 'DSA', collaborator: 'Kiran', date: '2026-04-09', type: 'helped', status: 'completed', rating: 4.8 },
-    { subject: 'ML', collaborator: 'Ananya', date: '2026-04-10', type: 'received', status: 'completed', rating: 4.7 },
-    { subject: 'OS', collaborator: 'Neha', date: '2026-04-10', type: 'helped', status: 'completed', rating: 4.8 },
-    { subject: 'DSA', collaborator: 'Priya', date: '2026-04-11', type: 'received', status: 'booked', rating: null },
-    { subject: 'ML', collaborator: 'Rohan', date: '2026-04-12', type: 'helped', status: 'pending', rating: null },
-    { subject: 'OS', collaborator: 'Kiran', date: '2026-04-13', type: 'received', status: 'booked', rating: null }
-  ];
+import { auth, db } from "./firebase.js";
+import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  const totalSessions = userSessions.length;
-  const completedSessions = userSessions.filter(session => session.status === 'completed').length;
-  const averageRating = (
-    userSessions
-      .filter(session => session.rating !== null)
-      .reduce((sum, session) => sum + session.rating, 0) /
-    userSessions.filter(session => session.rating !== null).length
-  ).toFixed(1);
+let weekChart = null;
+let subjectChart = null;
+let helpChart = null;
+let allSessions = [];
+
+window.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.querySelector('.search-box input');
+  const avatarToggle = document.getElementById('avatarToggle');
+  const avatarDropdown = document.getElementById('avatarDropdown');
+  const notificationToggle = document.getElementById('notificationToggle');
+  const notificationPanel = document.getElementById('notificationPanel');
+
+  setupInteractions({ avatarToggle, avatarDropdown, notificationToggle, notificationPanel });
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = 'login.html';
+      return;
+    }
+
+    const userSnap = await getDoc(doc(db, 'users', user.uid));
+    if (!userSnap.exists()) {
+      window.location.href = 'setup.html';
+      return;
+    }
+
+    const userData = userSnap.data();
+    if (avatarToggle) {
+      avatarToggle.textContent = (userData.name || 'U')[0].toUpperCase();
+    }
+
+    allSessions = await fetchUserSessions(user.uid);
+    renderSessions(allSessions);
+
+    if (searchInput) {
+      searchInput.addEventListener('input', (event) => {
+        renderSessions(allSessions, event.target.value.trim().toLowerCase());
+      });
+    }
+  });
+});
+
+function setupInteractions(elements) {
+  const { avatarToggle, avatarDropdown, notificationToggle, notificationPanel } = elements;
+
+  if (notificationToggle && notificationPanel) {
+    notificationToggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      notificationPanel.classList.toggle('hidden');
+      if (avatarDropdown) avatarDropdown.classList.remove('show');
+    });
+  }
+
+  if (avatarToggle && avatarDropdown) {
+    avatarToggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      avatarDropdown.classList.toggle('show');
+      if (notificationPanel) notificationPanel.classList.add('hidden');
+    });
+  }
+
+  document.addEventListener('click', (event) => {
+    if (notificationPanel && !notificationPanel.contains(event.target) && event.target !== notificationToggle) {
+      notificationPanel.classList.add('hidden');
+    }
+    if (avatarDropdown && !avatarDropdown.contains(event.target) && event.target !== avatarToggle) {
+      avatarDropdown.classList.remove('show');
+    }
+  });
+}
+
+async function fetchUserSessions(userId) {
+  const requesterQuery = query(
+    collection(db, 'matchRequests'),
+    where('requesterId', '==', userId)
+  );
+
+  const ownerQuery = query(
+    collection(db, 'matchRequests'),
+    where('slotOwnerId', '==', userId)
+  );
+
+  const [requesterSnap, ownerSnap] = await Promise.all([getDocs(requesterQuery), getDocs(ownerQuery)]);
+
+  const sessionDocs = [];
+  const collaboratorIds = new Set();
+  const slotIds = new Set();
+
+  requesterSnap.docs.forEach((docSnap) => {
+    const data = docSnap.data();
+    if (!data) return;
+    sessionDocs.push({ id: docSnap.id, data, isRequester: true, collaboratorId: data.slotOwnerId });
+    if (data.slotOwnerId) collaboratorIds.add(data.slotOwnerId);
+    if (data.slotId) slotIds.add(data.slotId);
+  });
+
+  ownerSnap.docs.forEach((docSnap) => {
+    const data = docSnap.data();
+    if (!data) return;
+    sessionDocs.push({ id: docSnap.id, data, isRequester: false, collaboratorId: data.requesterId });
+    if (data.requesterId) collaboratorIds.add(data.requesterId);
+    if (data.slotId) slotIds.add(data.slotId);
+  });
+
+  const collaboratorNames = await fetchNames(Array.from(collaboratorIds));
+  const slotMap = await fetchSlots(Array.from(slotIds));
+
+  return sessionDocs.map((item) => buildSession(item, collaboratorNames, slotMap));
+}
+
+async function fetchNames(ids) {
+  const nameMap = {};
+  await Promise.all(ids.map(async (id) => {
+    if (!id) return;
+    const userSnap = await getDoc(doc(db, 'users', id));
+    nameMap[id] = userSnap.exists() ? (userSnap.data().name || 'Peer') : 'Peer';
+  }));
+  return nameMap;
+}
+
+async function fetchSlots(ids) {
+  const slots = {};
+  await Promise.all(ids.map(async (slotId) => {
+    if (!slotId) return;
+    const slotSnap = await getDoc(doc(db, 'availabilitySlots', slotId));
+    if (slotSnap.exists()) {
+      slots[slotId] = slotSnap.data();
+    }
+  }));
+  return slots;
+}
+
+function buildSession(item, collaborators, slotMap) {
+  const { data, isRequester, collaboratorId } = item;
+  const collaboratorName = collaborators[collaboratorId] || 'Peer';
+  const slot = slotMap[data.slotId] || {};
+  const status = normalizeStatus(data.status || slot.status || 'pending');
+  const rawDate = getDateObject(data.completedAt) || getDateObject(data.updatedAt) || getDateObject(data.createdAt) || getDateObject(slot.date);
+  const dateLabel = slot.date || data.slotSnapshot?.day || formatDate(rawDate) || 'Unknown';
+  const timeText = slot.startTime || data.slotSnapshot?.startTime || '';
+
+  return {
+    id: item.id,
+    collaboratorName,
+    type: isRequester ? 'received' : 'helped',
+    status,
+    rating: typeof data.rating === 'number' ? data.rating : null,
+    subject: slot.subject || data.slotSnapshot?.subject || 'General',
+    dateLabel,
+    rawDate,
+    timeText,
+    completed: status === 'completed',
+    upcoming: ['pending', 'booked', 'accepted', 'in_progress'].includes(status)
+  };
+}
+
+function normalizeStatus(status) {
+  if (!status) return 'pending';
+  if (status === 'accepted') return 'booked';
+  return status;
+}
+
+function getDateObject(value) {
+  if (!value) return null;
+  if (value.toDate) return value.toDate();
+  if (typeof value === 'string' || typeof value === 'number') return new Date(value);
+  return null;
+}
+
+function formatDate(date) {
+  if (!date || Number.isNaN(date.getTime())) return null;
+  return date.toISOString().slice(0, 10);
+}
+
+function renderSessions(sessions, searchTerm = '') {
+  const normalizedSearch = searchTerm.toLowerCase();
+  const filtered = sessions.filter((session) => {
+    if (!normalizedSearch) return true;
+    return (
+      session.collaboratorName.toLowerCase().includes(normalizedSearch) ||
+      session.subject.toLowerCase().includes(normalizedSearch) ||
+      session.status.toLowerCase().includes(normalizedSearch)
+    );
+  });
+
+  renderSummary(filtered);
+  renderTopCollaborators(filtered);
+  renderCharts(filtered);
+}
+
+function renderSummary(sessions) {
+  const totalSessions = sessions.length;
+  const completedSessions = sessions.filter((session) => session.completed).length;
+  const ratedSessions = sessions.filter((session) => session.rating !== null);
+  const averageRating = ratedSessions.length > 0
+    ? (ratedSessions.reduce((sum, session) => sum + session.rating, 0) / ratedSessions.length).toFixed(1)
+    : '0.0';
 
   document.getElementById('totalSessions').textContent = totalSessions;
   document.getElementById('completedSessions').textContent = completedSessions;
   document.getElementById('avgRating').textContent = averageRating;
+}
 
-  const upcomingList = document.getElementById('upcomingList');
-  const upcomingSessions = userSessions
-    .filter(session => session.status === 'booked' || session.status === 'pending')
-    .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-  upcomingSessions.forEach(session => {
-    const item = document.createElement('div');
-    item.className = 'session-item';
-    item.innerHTML = `
-      <strong>${session.subject} with ${session.collaborator}</strong>
-      <span>${session.date} · ${session.status.charAt(0).toUpperCase() + session.status.slice(1)}</span>
-    `;
-    upcomingList.appendChild(item);
-  });
-
-  const collaboratorCounts = userSessions.reduce((acc, session) => {
-    acc[session.collaborator] = (acc[session.collaborator] || 0) + 1;
+function renderTopCollaborators(sessions) {
+  const collaboratorCounts = sessions.reduce((acc, session) => {
+    acc[session.collaboratorName] = (acc[session.collaboratorName] || 0) + 1;
     return acc;
   }, {});
 
   const topCollaborators = Object.entries(collaboratorCounts)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 4);
+    .slice(0, 3);
 
-  const collaboratorsContainer = document.getElementById('topCollaborators');
+  const container = document.getElementById('topCollaborators');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (topCollaborators.length === 0) {
+    container.innerHTML = '<div class="collaborator-item empty">No collaborators yet.</div>';
+    return;
+  }
+
   topCollaborators.forEach(([name, count]) => {
     const item = document.createElement('div');
     item.className = 'collaborator-item';
@@ -59,109 +239,129 @@ window.addEventListener('DOMContentLoaded', () => {
       <strong>${name}</strong>
       <span>${count} session${count > 1 ? 's' : ''}</span>
     `;
-    collaboratorsContainer.appendChild(item);
+    container.appendChild(item);
   });
+}
 
-  const subjectCounts = userSessions.reduce((acc, session) => {
+function renderCharts(sessions) {
+  const completedSessions = sessions.filter((session) => session.completed);
+
+  const subjectCounts = completedSessions.reduce((acc, session) => {
     acc[session.subject] = (acc[session.subject] || 0) + 1;
     return acc;
   }, {});
 
-  const helpStats = userSessions.reduce((acc, session) => {
+  const helpStats = completedSessions.reduce((acc, session) => {
     acc[session.type] = (acc[session.type] || 0) + 1;
     return acc;
   }, { helped: 0, received: 0 });
 
-  const allDates = userSessions.map(session => session.date);
-  const minDate = new Date(Math.min(...allDates.map(date => new Date(date))));
-  const weekLabels = [];
-  for (let i = 0; i < 7; i += 1) {
-    const date = new Date(minDate);
-    date.setDate(minDate.getDate() + i);
-    weekLabels.push(date.toISOString().slice(0, 10));
-  }
+  const dates = completedSessions
+    .map((session) => session.rawDate)
+    .filter(Boolean)
+    .map((date) => formatDate(date));
 
-  const sessionsByDay = weekLabels.map(label =>
-    userSessions.filter(session => session.date === label).length
+  const weekLabels = getLastSevenDays(dates);
+
+  const sessionsByDay = weekLabels.map((label) =>
+    completedSessions.filter((session) => formatDate(session.rawDate) === label).length
   );
 
-  new Chart(document.getElementById('sessionsWeekChart'), {
-    type: 'line',
-    data: {
-      labels: weekLabels,
-      datasets: [{
-        label: 'Sessions',
-        data: sessionsByDay,
-        borderColor: '#2563eb',
-        backgroundColor: 'rgba(37, 99, 235, 0.16)',
-        tension: 0.35,
-        fill: true
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-    }
-  });
+  const sessionCanvas = document.getElementById('sessionsWeekChart');
+  const subjectCanvas = document.getElementById('subjectChart');
+  const helpCanvas = document.getElementById('helpChart');
 
-  new Chart(document.getElementById('subjectChart'), {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(subjectCounts),
-      datasets: [{
-        data: Object.values(subjectCounts),
-        backgroundColor: ['#2563eb', '#10b981', '#f97316', '#8b5cf6']
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: { position: 'bottom' }
+  const statusValues = completedSessions.length > 0 ? completedSessions.length : 0;
+
+  if (weekChart) weekChart.destroy();
+  if (subjectChart) subjectChart.destroy();
+  if (helpChart) helpChart.destroy();
+
+  if (sessionCanvas) {
+    weekChart = new Chart(sessionCanvas, {
+      type: 'line',
+      data: {
+        labels: weekLabels,
+        datasets: [{
+          label: 'Sessions',
+          data: sessionsByDay,
+          borderColor: '#2563eb',
+          backgroundColor: 'rgba(37, 99, 235, 0.16)',
+          tension: 0.35,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
       }
-    }
-  });
+    });
+  }
 
-  new Chart(document.getElementById('helpChart'), {
-    type: 'bar',
-    data: {
-      labels: ['Help Given', 'Help Received'],
-      datasets: [{
-        label: 'Sessions',
-        data: [helpStats.helped, helpStats.received],
-        backgroundColor: ['#2563eb', '#10b981']
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-    }
-  });
+  if (subjectCanvas) {
+    const subjectLabels = Object.keys(subjectCounts);
+    const subjectValues = Object.values(subjectCounts);
 
-  const notificationToggle = document.getElementById('notificationToggle');
-  const notificationPanel = document.getElementById('notificationPanel');
-  const avatarToggle = document.getElementById('avatarToggle');
-  const avatarDropdown = document.getElementById('avatarDropdown');
+    subjectChart = new Chart(subjectCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: subjectLabels.length > 0 ? subjectLabels : ['No subjects yet'],
+        datasets: [{
+          data: subjectValues.length > 0 ? subjectValues : [1],
+          backgroundColor: subjectLabels.length > 0
+            ? ['#2563eb', '#10b981', '#f97316', '#8b5cf6', '#ef4444', '#facc15', '#14b8a6']
+            : ['#cbd5e1']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+  }
 
-  notificationToggle.addEventListener('click', (event) => {
-    event.stopPropagation();
-    notificationPanel.classList.toggle('hidden');
-    avatarDropdown.classList.remove('show');
-  });
+  if (helpCanvas) {
+    helpChart = new Chart(helpCanvas, {
+      type: 'bar',
+      data: {
+        labels: ['Help Given', 'Help Received'],
+        datasets: [{
+          label: 'Sessions',
+          data: [helpStats.helped, helpStats.received],
+          backgroundColor: ['#2563eb', '#10b981']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+      }
+    });
+  }
+}
 
-  avatarToggle.addEventListener('click', (event) => {
-    event.stopPropagation();
-    avatarDropdown.classList.toggle('show');
-    notificationPanel.classList.add('hidden');
-  });
+function getLastSevenDays(existingDates = []) {
+  const normalized = Array.from(new Set(existingDates))
+    .filter(Boolean)
+    .sort();
 
-  document.addEventListener('click', (event) => {
-    if (!notificationPanel.contains(event.target) && event.target !== notificationToggle) {
-      notificationPanel.classList.add('hidden');
-    }
-    if (!avatarDropdown.contains(event.target) && event.target !== avatarToggle) {
-      avatarDropdown.classList.remove('show');
-    }
-  });
-});
+  if (normalized.length > 0) {
+    const lastSeven = normalized.slice(-7);
+    return lastSeven;
+  }
+
+  const today = new Date();
+  const labels = [];
+  for (let i = 6; i >= 0; i -= 1) {
+    const date = new Date(today);
+    date.setDate(today.getDate() - i);
+    labels.push(formatDate(date));
+  }
+  return labels;
+}
+
+function capitalize(text) {
+  if (!text) return '';
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
