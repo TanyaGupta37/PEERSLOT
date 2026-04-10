@@ -54,11 +54,11 @@
             <div class="reward-summary">
               <div class="reward-chip">
                 <span>PeerToken</span>
-                <strong>1,280</strong>
+                <strong id="rewardTokenAmount">0</strong>
               </div>
               <div class="reward-chip">
                 <span>Badges</span>
-                <strong>5 earned</strong>
+                <strong id="rewardBadgesCount">0 earned</strong>
               </div>
             </div>
           </div>
@@ -66,18 +66,10 @@
           <div class="card">
             <h2>Badges unlocked</h2>
 
-            <div class="badge-grid">
-              <div class="badge-card">
-                <strong>Top Helper</strong>
-                <p>Helped 20 peers</p>
-              </div>
-              <div class="badge-card">
-                <strong>Fast Responder</strong>
-                <p>Replied within 10 min</p>
-              </div>
-              <div class="badge-card">
-                <strong>Consistent Learner</strong>
-                <p>3 sessions this week</p>
+            <div id="badgeGrid" class="badge-grid">
+              <div class="badge-card empty-badge">
+                <strong>No badges yet</strong>
+                <p>Complete sessions to unlock badges.</p>
               </div>
             </div>
           </div>
@@ -87,18 +79,16 @@
           <div class="panel-card">
             <h3>Progress to next reward</h3>
             <div class="progress-row">
-              <span>Silver level</span>
-              <strong>8 / 12 points</strong>
+              <span id="progressLevel">Silver level</span>
+              <strong id="progressPoints">0 / 12 points</strong>
             </div>
-            <div class="progress-bar"><div style="width: 66%"></div></div>
+            <div class="progress-bar"><div id="progressBarFill" style="width: 0%"></div></div>
           </div>
 
           <div class="panel-card">
             <h3>Recent activity</h3>
-            <ul class="activity-list">
-              <li>Completed JavaScript review</li>
-              <li>Earned 120 PeerToken</li>
-              <li>Booked 2 sessions this week</li>
+            <ul id="activityList" class="activity-list">
+              <li>No recent activity yet.</li>
             </ul>
           </div>
         </aside>
@@ -106,6 +96,6 @@
     </main>
   </div>
 
-  <script src="rewards.js"></script>
+  <script type="module" src="rewards.js"></script>
 </body>
 </html>
