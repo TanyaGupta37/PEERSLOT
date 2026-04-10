@@ -9,15 +9,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const calendarEl = document.getElementById("calendar");
   if (!calendarEl) return;
 
-  // Initialize calendar with basic view first
+  // Initialize calendar using the Get Help calendar configuration
   dashboardCalendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: "dayGridWeek",
-    height: 380,
+    initialView: "dayGridMonth",
+    height: 500,
 
     headerToolbar: {
-      left: "prev,next",
+      left: "prev,next today",
       center: "title",
-      right: ""
+      right: "dayGridMonth,timeGridWeek"
     },
 
     events: [],
@@ -67,14 +67,22 @@ async function loadAvailabilityToCalendar(calendar) {
 
         // Add slots as events
         slots.forEach(slot => {
-          const dayIndex = DAYS.indexOf(slot.day);
-          if (dayIndex === -1) return;
+          let slotDate = null;
 
-          // Calculate date for this slot based on day of week
-          const slotDate = new Date(today);
-          slotDate.setDate(today.getDate() + mondayOffset + dayIndex);
+          if (slot.date) {
+            const parsedDate = new Date(slot.date + "T00:00:00");
+            if (!Number.isNaN(parsedDate.getTime())) {
+              slotDate = parsedDate;
+            }
+          }
 
-          const dateStr = slotDate.toISOString().split("T")[0];
+          if (!slotDate) {
+            const dayIndex = DAYS.indexOf(slot.day);
+            if (dayIndex === -1) return;
+
+            slotDate = new Date(today);
+            slotDate.setDate(today.getDate() + mondayOffset + dayIndex);
+          }
 
           // Parse times
           const [startHour, startMin] = slot.startTime.split(":").map(Number);
