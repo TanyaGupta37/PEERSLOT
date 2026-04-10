@@ -5,6 +5,7 @@ import {
   doc,
   getDoc,
   getDocs,
+  onSnapshot,
   query,
   where,
   orderBy
@@ -43,14 +44,17 @@ window.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const userSnap = await getDoc(doc(db, 'users', user.uid));
-    if (!userSnap.exists()) {
-      window.location.href = 'setup.html';
-      return;
-    }
+    const userDocRef = doc(db, 'users', user.uid);
+    onSnapshot(userDocRef, async (snapshot) => {
+      if (!snapshot.exists()) {
+        window.location.href = 'setup.html';
+        return;
+      }
 
-    const userData = userSnap.data();
-    await renderRewardData(userData, user.uid);
+      await renderRewardData(snapshot.data(), user.uid);
+    }, (error) => {
+      console.error('Reward page snapshot error:', error);
+    });
   });
 });
 

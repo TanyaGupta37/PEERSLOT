@@ -43,6 +43,12 @@ window.signup = async () => {
     await setDoc(doc(db, "users", cred.user.uid), {
       email,
       profileCompleted: false,
+      peerToken: 0,
+      badges: [],
+      badgeCount: 0,
+      rewardLevel: 'Silver level',
+      rewardPoints: 0,
+      nextRewardPoints: 12,
       createdAt: new Date()
     });
 
