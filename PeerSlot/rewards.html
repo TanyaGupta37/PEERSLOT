@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PeerSlot | Rewards</title>
+  <link rel="stylesheet" href="rewards.css">
+</head>
+<body>
+  <div class="dashboard-layout">
+    <aside class="sidebar">
+      <h2>PeerSlot</h2>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="offer-help.html">Offer Help</a>
+      <a href="get-help.html">Get Help</a>
+      <a href="sessions.html">My Sessions</a>
+      <a class="active" href="rewards.html">Rewards</a>
+    </aside>
+
+    <main class="dashboard-main">
+      <div class="topbar">
+        <div class="search-box">
+          <input type="text" placeholder="Search subjects, peers, skills..." />
+        </div>
+
+        <div class="top-icons">
+          <button id="notificationToggle" class="bell">🔔</button>
+
+          <div class="avatar-wrapper">
+            <button id="avatarToggle" class="avatar">T</button>
+            <div id="avatarDropdown" class="avatar-dropdown">
+              <div class="avatar-dropdown-item">Profile</div>
+              <div class="avatar-dropdown-item">Settings</div>
+              <div class="avatar-dropdown-item" data-action="logout">Log out</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="notificationPanel" class="notification-panel hidden">
+          <div class="notification-card">PeerToken earned for helping.</div>
+          <div class="notification-card">New badge available soon.</div>
+        </div>
+      </div>
+
+      <section class="page-heading">
+        <h1>Rewards</h1>
+        <p>Track your PeerToken balance, badges, and level progress.</p>
+      </section>
+
+      <div class="content-grid">
+        <section class="content-column">
+          <div class="card">
+            <h2>Reward balance</h2>
+
+            <div class="reward-summary">
+              <div class="reward-chip">
+                <span>PeerToken</span>
+                <strong>1,280</strong>
+              </div>
+              <div class="reward-chip">
+                <span>Badges</span>
+                <strong>5 earned</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Badges unlocked</h2>
+
+            <div class="badge-grid">
+              <div class="badge-card">
+                <strong>Top Helper</strong>
+                <p>Helped 20 peers</p>
+              </div>
+              <div class="badge-card">
+                <strong>Fast Responder</strong>
+                <p>Replied within 10 min</p>
+              </div>
+              <div class="badge-card">
+                <strong>Consistent Learner</strong>
+                <p>3 sessions this week</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel-column">
+          <div class="panel-card">
+            <h3>Progress to next reward</h3>
+            <div class="progress-row">
+              <span>Silver level</span>
+              <strong>8 / 12 points</strong>
+            </div>
+            <div class="progress-bar"><div style="width: 66%"></div></div>
+          </div>
+
+          <div class="panel-card">
+            <h3>Recent activity</h3>
+            <ul class="activity-list">
+              <li>Completed JavaScript review</li>
+              <li>Earned 120 PeerToken</li>
+              <li>Booked 2 sessions this week</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script src="rewards.js"></script>
+</body>
+</html>
